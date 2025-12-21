@@ -554,173 +554,437 @@
   </div>
 </section>
 
-<!-- Stats Section -->
+<!-- Stats Section - Fanfix Style with Counter and Creator Photo -->
 <section class="py-20 bg-[#f9f9f9]">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="grid lg:grid-cols-2 gap-12 items-center">
+      <!-- Left Side - Creator Photo with Dashboard Preview -->
+      <div class="relative">
+        <div class="relative z-10">
+          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&h=700&fit=crop" 
+               alt="Flikk Creator" 
+               class="rounded-3xl shadow-2xl w-full max-w-md mx-auto object-cover">
+          
+          <!-- Floating Dashboard Preview -->
+          <div class="absolute -bottom-6 -right-6 lg:right-0 lg:-bottom-8 w-48 md:w-56 bg-white rounded-2xl shadow-xl p-4 transform rotate-3">
+            <div class="flex items-center space-x-2 mb-3">
+              <div class="w-6 h-6 bg-gradient-to-r from-pink-400 to-purple-400 rounded-lg flex items-center justify-center">
+                <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+              <span class="font-semibold text-sm">FLIKK</span>
+            </div>
+            <div class="text-xs text-gray-500 mb-2">Creator Dashboard</div>
+            <div class="text-xs text-gray-400 mb-1">Insights ⓘ</div>
+            <div class="space-y-1 text-xs">
+              <div class="flex justify-between"><span class="text-gray-500">Total Net Earnings</span><span class="font-semibold">₹17,000</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">Subscriptions</span><span class="font-semibold">₹12,320</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">All Tips</span><span class="font-semibold">₹4,680</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">Tip Revenue from DMs</span><span class="font-semibold">₹2,000</span></div>
+            </div>
+            <div class="flex justify-between mt-3 text-center border-t pt-2">
+              <div><div class="font-bold text-sm">4</div><div class="text-[10px] text-gray-400">Subscribers</div></div>
+              <div><div class="font-bold text-sm">16</div><div class="text-[10px] text-gray-400">Posts</div></div>
+              <div><div class="font-bold text-sm">2,040</div><div class="text-[10px] text-gray-400">Messages</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Right Side - Counter and Text -->
       <div class="text-center lg:text-left">
-        <div class="font-display text-6xl md:text-7xl lg:text-8xl text-black mb-4">OVER ₹100CR</div>
-        <h2 class="font-display text-3xl md:text-4xl text-black mb-6">PAID OUT TO CREATORS</h2>
+        <!-- Animated Counter Display -->
+        <div class="flex justify-center lg:justify-start space-x-2 mb-4">
+          <div class="w-12 h-16 md:w-16 md:h-20 bg-black rounded-xl flex items-center justify-center">
+            <span class="font-display text-3xl md:text-4xl text-white counter-digit" data-target="2">2</span>
+          </div>
+          <div class="w-12 h-16 md:w-16 md:h-20 bg-black rounded-xl flex items-center justify-center">
+            <span class="font-display text-3xl md:text-4xl text-white counter-digit" data-target="0">0</span>
+          </div>
+          <div class="w-12 h-16 md:w-16 md:h-20 bg-black rounded-xl flex items-center justify-center">
+            <span class="font-display text-3xl md:text-4xl text-white counter-digit" data-target="0">0</span>
+          </div>
+          <div class="w-12 h-16 md:w-16 md:h-20 bg-black rounded-xl flex items-center justify-center">
+            <span class="font-display text-3xl md:text-4xl text-white">Cr</span>
+          </div>
+          <div class="w-12 h-16 md:w-16 md:h-20 bg-black rounded-xl flex items-center justify-center">
+            <span class="font-display text-3xl md:text-4xl text-white">+</span>
+          </div>
+        </div>
+        
+        <h2 class="font-display text-4xl md:text-5xl lg:text-6xl text-black mb-6 leading-tight">
+          OVER ₹200CR<br>PAID OUT TO<br>CREATORS
+        </h2>
+        
         <p class="text-gray-700 text-lg leading-relaxed mb-4">
           Join the Flikk community of over 15 million users to unlock a new stream of recurring income. 
-          We will help you every step of the way, providing marketing coaching, special opportunities, and all the data you need to grow your following and increase your earnings.
+          We will help you every step of the way, providing marketing coaching, special opportunities, and all the data you need to grow your following and increase your earnings. The Flikk Creator Success team is here to help you grow your business!
         </p>
         <p class="text-gray-700 text-lg leading-relaxed mb-4">
-          Becoming a Flikk creator also gets you access to exclusive parties, events, concerts, and other IRL experiences that are only for the Flikk community.
+          Becoming a Flikk creator also gets you access to exclusive parties, sporting events, concerts, and other IRL experiences that are only for the Flikk community.
         </p>
-        <p class="text-gray-700 text-lg leading-relaxed">
-          We also have brand partnership opportunities exclusively for Flikk creators.
-        </p>
-      </div>
-      <div class="grid grid-cols-2 gap-6">
-        <div class="bg-white rounded-2xl p-6 text-center shadow-lg">
-          <div class="font-display text-4xl md:text-5xl text-black">80%</div>
-          <div class="text-gray-600 mt-2">Earnings You Keep</div>
-        </div>
-        <div class="bg-white rounded-2xl p-6 text-center shadow-lg">
-          <div class="font-display text-4xl md:text-5xl text-black">24HRS</div>
-          <div class="text-gray-600 mt-2">Fast Payouts</div>
-        </div>
-        <div class="bg-white rounded-2xl p-6 text-center shadow-lg">
-          <div class="font-display text-4xl md:text-5xl text-black">10K+</div>
-          <div class="text-gray-600 mt-2">Active Creators</div>
-        </div>
-        <div class="bg-white rounded-2xl p-6 text-center shadow-lg">
-          <div class="font-display text-4xl md:text-5xl text-black">15M+</div>
-          <div class="text-gray-600 mt-2">Happy Fans</div>
+        
+        <!-- Mobile Preview Card -->
+        <div class="hidden lg:block mt-8">
+          <div class="bg-white rounded-2xl shadow-lg p-4 max-w-xs">
+            <div class="text-xs text-gray-500 uppercase tracking-wide mb-2">Many Ways to Earn</div>
+            <div class="grid grid-cols-2 gap-2">
+              <div class="bg-gradient-to-br from-pink-100 to-purple-100 rounded-xl p-3 text-center">
+                <span class="text-2xl">💬</span>
+                <div class="text-xs font-medium mt-1">DMs</div>
+              </div>
+              <div class="bg-gradient-to-br from-blue-100 to-cyan-100 rounded-xl p-3 text-center">
+                <span class="text-2xl">🎥</span>
+                <div class="text-xs font-medium mt-1">Live</div>
+              </div>
+              <div class="bg-gradient-to-br from-yellow-100 to-orange-100 rounded-xl p-3 text-center">
+                <span class="text-2xl">⭐</span>
+                <div class="text-xs font-medium mt-1">Subs</div>
+              </div>
+              <div class="bg-gradient-to-br from-green-100 to-teal-100 rounded-xl p-3 text-center">
+                <span class="text-2xl">💰</span>
+                <div class="text-xs font-medium mt-1">Tips</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- CTA Section -->
-<section class="py-20 bg-gradient-to-b from-white to-pink-50">
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-    <h2 class="font-display text-4xl md:text-5xl lg:text-6xl text-black mb-8">READY TO GET PAID?</h2>
-    <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
-      <%= link_to creator_registration_path, class: "btn-primary px-10 py-4 text-lg font-semibold flex items-center space-x-3" do %>
+<!-- Many Ways to Earn Section - Fanfix Style 3D Cards -->
+<section class="py-20 bg-gradient-to-b from-[#f9f9f9] via-pink-50/30 to-purple-50/30">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h2 class="font-display text-4xl md:text-5xl lg:text-6xl text-center text-black mb-16">MANY WAYS TO EARN!</h2>
+    
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <!-- Direct Messages Card -->
+      <div class="bg-gradient-to-br from-pink-200 via-pink-100 to-purple-100 rounded-3xl p-6 relative overflow-hidden group hover:scale-105 transition-transform duration-300">
+        <div class="absolute top-4 right-4 opacity-30">
+          <!-- 3D Heart illustration -->
+          <svg class="w-24 h-24" viewBox="0 0 100 100">
+            <defs>
+              <linearGradient id="heartGradientEarn" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#c4b5fd"/>
+                <stop offset="100%" style="stop-color:#a78bfa"/>
+              </linearGradient>
+            </defs>
+            <path fill="url(#heartGradientEarn)" d="M50 88.9l-4.1-3.7C19.5 61.4 3.1 46.9 3.1 29.1c0-12.5 9.8-22.4 22.2-22.4c7.1 0 14 3.4 18.4 8.7l6.3 7.5l6.3-7.5c4.4-5.3 11.3-8.7 18.4-8.7c12.4 0 22.2 9.9 22.2 22.4c0 17.8-16.4 32.3-42.8 56.1L50 88.9z"/>
+          </svg>
+        </div>
+        <div class="relative z-10">
+          <div class="bg-white rounded-full px-4 py-2 inline-flex items-center space-x-2 shadow-lg mb-32">
+            <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+            </svg>
+            <span class="font-semibold text-sm">DIRECT MESSAGES</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Livestreams Card -->
+      <div class="bg-gradient-to-br from-purple-100 via-blue-100 to-cyan-100 rounded-3xl p-6 relative overflow-hidden group hover:scale-105 transition-transform duration-300">
+        <!-- Phone mockup -->
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-56 bg-black rounded-3xl p-1 shadow-2xl transform rotate-3">
+          <div class="w-full h-full bg-gradient-to-b from-pink-300 to-purple-400 rounded-2xl overflow-hidden relative">
+            <div class="absolute top-2 left-1/2 -translate-x-1/2 w-16 h-1 bg-black/20 rounded-full"></div>
+            <div class="absolute top-8 left-2 bg-red-500 text-white text-[8px] px-2 py-0.5 rounded-full flex items-center space-x-1">
+              <span class="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
+              <span>LIVE</span>
+            </div>
+            <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=150&h=250&fit=crop&crop=face" alt="" class="w-full h-full object-cover">
+            <div class="absolute bottom-2 left-2 right-2 bg-black/40 backdrop-blur-sm rounded-lg p-1 text-white text-[8px] flex justify-between">
+              <span>01:30</span>
+              <span>112 viewers</span>
+              <span>₹18,400</span>
+            </div>
+          </div>
+        </div>
+        <div class="relative z-10 mb-4">
+          <div class="bg-white rounded-full px-4 py-2 inline-flex items-center space-x-2 shadow-lg">
+            <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+            <span class="font-semibold text-sm">LIVESTREAMS</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Subscriptions Card -->
+      <div class="bg-gradient-to-br from-yellow-100 via-orange-100 to-pink-100 rounded-3xl p-6 relative overflow-hidden group hover:scale-105 transition-transform duration-300">
+        <div class="relative z-10 mb-4">
+          <div class="bg-white rounded-full px-4 py-2 inline-flex items-center space-x-2 shadow-lg">
+            <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+            </svg>
+            <span class="font-semibold text-sm">SUBSCRIPTIONS</span>
+          </div>
+        </div>
+        <div class="absolute bottom-4 left-4 right-4">
+          <div class="bg-white/80 backdrop-blur rounded-xl p-3 shadow-lg">
+            <div class="flex items-center justify-between text-sm">
+              <span class="text-gray-600">Monthly subscribers</span>
+              <span class="font-bold text-green-600">+24%</span>
+            </div>
+            <div class="mt-2 h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div class="h-full w-3/4 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Tips Card -->
+      <div class="bg-gradient-to-br from-cyan-100 via-purple-100 to-pink-100 rounded-3xl p-6 relative overflow-hidden group hover:scale-105 transition-transform duration-300">
+        <!-- Floating coins -->
+        <div class="absolute inset-0 overflow-hidden">
+          <div class="absolute top-8 right-8 w-12 h-12 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full shadow-lg flex items-center justify-center transform rotate-12">
+            <span class="text-white font-bold">₹</span>
+          </div>
+          <div class="absolute top-20 left-8 w-10 h-10 bg-gradient-to-br from-cyan-400 to-blue-400 rounded-full shadow-lg flex items-center justify-center transform -rotate-12">
+            <span class="text-white font-bold text-sm">₹</span>
+          </div>
+          <div class="absolute bottom-16 right-12 w-8 h-8 bg-gradient-to-br from-pink-400 to-purple-400 rounded-full shadow-lg flex items-center justify-center">
+            <span class="text-white font-bold text-xs">₹</span>
+          </div>
+          <div class="absolute bottom-8 left-16 w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full shadow-lg flex items-center justify-center transform rotate-6">
+            <span class="text-white font-bold text-lg">₹</span>
+          </div>
+        </div>
+        <div class="relative z-10 mb-4">
+          <div class="bg-white rounded-full px-4 py-2 inline-flex items-center space-x-2 shadow-lg">
+            <span class="text-lg">💰</span>
+            <span class="font-semibold text-sm">TIPS</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section - Fanfix Style with Creator Grid Background -->
+<section class="relative py-32 overflow-hidden">
+  <!-- Creator Photo Grid Background -->
+  <div class="absolute inset-0 grid grid-cols-5 md:grid-cols-8 lg:grid-cols-10 gap-0.5 opacity-60">
+    <% 40.times do |i| %>
+      <div class="aspect-square overflow-hidden">
+        <img src="https://images.unsplash.com/photo-<%= ['1534528741775-53994a69daeb', '1507003211169-0a1dd7228f2d', '1524504388940-b1c1722653e1', '1539571696357-5a69c17a67c6', '1494790108377-be9c29b29330', '1500648767791-00dcc994a43e', '1517841905240-472988babdf9', '1506794778202-cad84cf45f1d', '1544005313-94ddf0286df2', '1531746020798-e6953c6e8e04'].sample %>?w=100&h=100&fit=crop&crop=face" 
+             alt="" 
+             class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-300">
+      </div>
+    <% end %>
+  </div>
+  
+  <!-- Dark Overlay -->
+  <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/70"></div>
+  
+  <!-- Content -->
+  <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <h2 class="font-display text-5xl md:text-6xl lg:text-7xl text-transparent bg-clip-text bg-gradient-to-r from-pink-300 via-pink-400 to-orange-300 mb-8">
+      READY TO GET PAID?
+    </h2>
+    
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-6 mb-6">
+      <!-- CTA Button -->
+      <%= link_to creator_registration_path, class: "bg-gradient-to-r from-pink-400 to-orange-400 hover:from-pink-500 hover:to-orange-500 text-black px-10 py-4 text-lg font-bold rounded-full flex items-center space-x-3 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105" do %>
         <span>Apply & Start Earning Today*</span>
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
         </svg>
       <% end %>
+      
+      <!-- QR Code -->
+      <div class="bg-white p-3 rounded-2xl shadow-xl transform rotate-6 hover:rotate-0 transition-transform duration-300">
+        <div class="w-24 h-24 bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl flex items-center justify-center">
+          <div class="grid grid-cols-5 gap-0.5 p-2">
+            <% 25.times do %>
+              <div class="w-2 h-2 <%= ['bg-black', 'bg-transparent'].sample %> rounded-sm"></div>
+            <% end %>
+          </div>
+        </div>
+        <div class="text-[10px] text-gray-500 text-center mt-1 flex items-center justify-center space-x-1">
+          <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"/>
+            <path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd"/>
+          </svg>
+          <span>SCAN TO GET THE APP</span>
+        </div>
+      </div>
     </div>
-    <p class="text-sm text-gray-500">*Must be 18+ and agree to age/identity verification</p>
+    
+    <p class="text-sm text-gray-300 bg-black/50 backdrop-blur-sm rounded-full px-4 py-2 inline-block">*Must be 18+ and agree to age/identity verification</p>
   </div>
 </section>
 
-<!-- FAQ Section -->
-<section id="faq" class="py-20 bg-white">
+<!-- FAQ Section - Fanfix Card Style -->
+<section id="faq" class="py-20 bg-[#f9f9f9]">
   <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-    <h2 class="font-display text-4xl md:text-5xl text-center text-black mb-12">FAQ</h2>
-    <div class="space-y-0">
-      <details class="faq-item group">
-        <summary class="flex items-center justify-between py-6 cursor-pointer">
-          <span class="font-medium text-lg">How many followers do I need to become a Flikk Creator?</span>
-          <svg class="w-6 h-6 text-gray-400 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-          </svg>
+    <!-- Gradient FLIKK watermark -->
+    <div class="text-center mb-8">
+      <span class="font-display text-6xl md:text-7xl text-transparent bg-clip-text bg-gradient-to-r from-pink-300 via-purple-300 to-cyan-300 opacity-50">FLIKK</span>
+    </div>
+    
+    <div class="space-y-4">
+      <details class="group bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+        <summary class="flex items-center justify-between p-6 cursor-pointer">
+          <span class="font-medium text-lg text-gray-900">How many followers do I need to become a Flikk Creator?</span>
+          <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 ml-4 group-open:bg-pink-100 transition-colors">
+            <svg class="w-5 h-5 text-gray-500 group-open:rotate-45 group-open:text-pink-500 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+          </div>
         </summary>
-        <div class="pb-6 text-gray-600">You need at least 10,000 followers across all your social media platforms to apply.</div>
+        <div class="px-6 pb-6 text-gray-600">You need at least 10,000 followers across all your social media platforms to apply.</div>
       </details>
-      <details class="faq-item group">
-        <summary class="flex items-center justify-between py-6 cursor-pointer">
-          <span class="font-medium text-lg">How much can I earn?</span>
-          <svg class="w-6 h-6 text-gray-400 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-          </svg>
+      
+      <details class="group bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+        <summary class="flex items-center justify-between p-6 cursor-pointer">
+          <span class="font-medium text-lg text-gray-900">How much can I earn?</span>
+          <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 ml-4 group-open:bg-pink-100 transition-colors">
+            <svg class="w-5 h-5 text-gray-500 group-open:rotate-45 group-open:text-pink-500 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+          </div>
         </summary>
-        <div class="pb-6 text-gray-600">How much you earn is completely up to you! You can set your own subscription & Tip-to-DM prices and you keep 80% of everything earned. Flikk keeps 20% to cover operations and maintain the platform.</div>
+        <div class="px-6 pb-6 text-gray-600">How much you earn is completely up to you! You can set your own subscription & Tip-to-DM prices and you keep 80% of everything earned. Flikk keeps 20% to cover operations and maintain the platform.</div>
       </details>
-      <details class="faq-item group">
-        <summary class="flex items-center justify-between py-6 cursor-pointer">
-          <span class="font-medium text-lg">How old do I have to be to use Flikk?</span>
-          <svg class="w-6 h-6 text-gray-400 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-          </svg>
+      
+      <details class="group bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+        <summary class="flex items-center justify-between p-6 cursor-pointer">
+          <span class="font-medium text-lg text-gray-900">How old do I have to be to use Flikk?</span>
+          <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 ml-4 group-open:bg-pink-100 transition-colors">
+            <svg class="w-5 h-5 text-gray-500 group-open:rotate-45 group-open:text-pink-500 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+          </div>
         </summary>
-        <div class="pb-6 text-gray-600">You must be at least 18 to use Flikk.</div>
+        <div class="px-6 pb-6 text-gray-600">You must be at least 18 to use Flikk.</div>
       </details>
-      <details class="faq-item group">
-        <summary class="flex items-center justify-between py-6 cursor-pointer">
-          <span class="font-medium text-lg">Is explicit content allowed?</span>
-          <svg class="w-6 h-6 text-gray-400 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-          </svg>
+      
+      <details class="group bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+        <summary class="flex items-center justify-between p-6 cursor-pointer">
+          <span class="font-medium text-lg text-gray-900">Is explicit content allowed?</span>
+          <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 ml-4 group-open:bg-pink-100 transition-colors">
+            <svg class="w-5 h-5 text-gray-500 group-open:rotate-45 group-open:text-pink-500 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+          </div>
         </summary>
-        <div class="pb-6 text-gray-600">No. Nudity is not allowed.</div>
+        <div class="px-6 pb-6 text-gray-600">No. Nudity is not allowed.</div>
       </details>
     </div>
   </div>
 </section>
 
-<!-- Footer with Category Marquee -->
-<footer class="relative overflow-hidden bg-gradient-to-b from-white via-pink-50 to-purple-50 pt-12">
-  <div class="marquee-container py-8">
+<!-- Footer with Category Marquee and Creator Arch -->
+<footer class="relative overflow-hidden bg-[#f9f9f9] pt-12">
+  <!-- Category Marquee Row 1 -->
+  <div class="marquee-container py-4 opacity-60">
     <div class="marquee-content">
       <span class="category-large-text mx-8">GAMING</span>
       <span class="category-large-text mx-8">DANCE</span>
-      <span class="category-large-text mx-8">BEAUTY</span>
+      <span class="category-large-text mx-8">HEALTH</span>
       <span class="category-large-text mx-8">FITNESS</span>
       <span class="category-large-text mx-8">COMEDY</span>
       <span class="category-large-text mx-8">MUSIC</span>
       <span class="category-large-text mx-8">GAMING</span>
       <span class="category-large-text mx-8">DANCE</span>
-      <span class="category-large-text mx-8">BEAUTY</span>
+      <span class="category-large-text mx-8">HEALTH</span>
       <span class="category-large-text mx-8">FITNESS</span>
       <span class="category-large-text mx-8">COMEDY</span>
       <span class="category-large-text mx-8">MUSIC</span>
     </div>
   </div>
-  <div class="marquee-container py-4">
+  
+  <!-- Category Marquee Row 2 -->
+  <div class="marquee-container py-4 opacity-60">
     <div class="marquee-content-reverse">
+      <span class="category-large-text mx-8">STONKS</span>
+      <span class="category-large-text mx-8">DANCE</span>
+      <span class="category-large-text mx-8">FITNESS</span>
+      <span class="category-large-text mx-8">GAMING</span>
+      <span class="category-large-text mx-8">MOTIVATION</span>
+      <span class="category-large-text mx-8">STONKS</span>
+      <span class="category-large-text mx-8">DANCE</span>
+      <span class="category-large-text mx-8">FITNESS</span>
+      <span class="category-large-text mx-8">GAMING</span>
+      <span class="category-large-text mx-8">MOTIVATION</span>
+    </div>
+  </div>
+  
+  <!-- Category Marquee Row 3 -->
+  <div class="marquee-container py-4 opacity-60">
+    <div class="marquee-content">
       <span class="category-large-text mx-8">MOTIVATION</span>
       <span class="category-large-text mx-8">LIFESTYLE</span>
-      <span class="category-large-text mx-8">FOOD</span>
+      <span class="category-large-text mx-8">MENTAL</span>
       <span class="category-large-text mx-8">TRAVEL</span>
       <span class="category-large-text mx-8">FINANCE</span>
       <span class="category-large-text mx-8">TECH</span>
       <span class="category-large-text mx-8">MOTIVATION</span>
       <span class="category-large-text mx-8">LIFESTYLE</span>
-      <span class="category-large-text mx-8">FOOD</span>
+      <span class="category-large-text mx-8">MENTAL</span>
       <span class="category-large-text mx-8">TRAVEL</span>
       <span class="category-large-text mx-8">FINANCE</span>
       <span class="category-large-text mx-8">TECH</span>
     </div>
   </div>
-  <div class="flex justify-center py-8">
-    <div class="w-64 h-80 md:w-80 md:h-96 bg-black rounded-t-full overflow-hidden grid grid-cols-2 gap-1 p-2">
-      <div class="rounded-tl-full overflow-hidden">
-        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=300&fit=crop&crop=face" alt="" class="w-full h-full object-cover">
+  
+  <!-- Creator Arch Collage - Fanfix Style -->
+  <div class="flex justify-center py-8 -mt-24 relative z-10">
+    <div class="w-72 h-96 md:w-96 md:h-[28rem] bg-black rounded-t-[200px] overflow-hidden grid grid-cols-2 gap-0.5 p-1 shadow-2xl">
+      <!-- Top row - rounded at top -->
+      <div class="rounded-tl-[200px] overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=300&fit=crop&crop=face" alt="" class="w-full h-full object-cover hover:scale-110 transition-transform duration-300">
       </div>
-      <div class="rounded-tr-full overflow-hidden">
-        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=300&fit=crop&crop=face" alt="" class="w-full h-full object-cover">
+      <div class="rounded-tr-[200px] overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=300&fit=crop&crop=face" alt="" class="w-full h-full object-cover hover:scale-110 transition-transform duration-300">
+      </div>
+      <!-- Row 2 -->
+      <div class="overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200&h=300&fit=crop&crop=face" alt="" class="w-full h-full object-cover hover:scale-110 transition-transform duration-300">
+      </div>
+      <div class="overflow-hidden bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center">
+        <!-- Podcast/Logo element like in Fanfix -->
+        <div class="text-center">
+          <div class="w-12 h-12 mx-auto mb-2 bg-blue-900 rounded-full flex items-center justify-center">
+            <svg class="w-6 h-6 text-cyan-400" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+              <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+            </svg>
+          </div>
+          <div class="text-white text-xs font-bold">CREATORS</div>
+          <div class="text-white text-[10px]">Jump</div>
+        </div>
+      </div>
+      <!-- Row 3 -->
+      <div class="overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=200&h=300&fit=crop&crop=face" alt="" class="w-full h-full object-cover hover:scale-110 transition-transform duration-300">
+      </div>
+      <div class="overflow-hidden bg-cyan-400">
+        <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&h=300&fit=crop&crop=face" alt="" class="w-full h-full object-cover hover:scale-110 transition-transform duration-300 mix-blend-overlay">
+      </div>
+      <!-- Row 4 -->
+      <div class="overflow-hidden bg-pink-400">
+        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=300&fit=crop&crop=face" alt="" class="w-full h-full object-cover hover:scale-110 transition-transform duration-300">
       </div>
       <div class="overflow-hidden">
-        <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=200&h=300&fit=crop&crop=face" alt="" class="w-full h-full object-cover">
-      </div>
-      <div class="overflow-hidden">
-        <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&h=300&fit=crop&crop=face" alt="" class="w-full h-full object-cover">
-      </div>
-      <div class="overflow-hidden">
-        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=300&fit=crop&crop=face" alt="" class="w-full h-full object-cover">
-      </div>
-      <div class="overflow-hidden">
-        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=300&fit=crop&crop=face" alt="" class="w-full h-full object-cover">
+        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=300&fit=crop&crop=face" alt="" class="w-full h-full object-cover hover:scale-110 transition-transform duration-300">
       </div>
     </div>
   </div>
+  
+  <!-- Footer Links -->
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="flex flex-wrap justify-center gap-6 text-sm font-medium text-black">
-      <a href="mailto:hello@flikk.co.in" class="hover:opacity-70">EMAIL US</a>
-      <a href="#" class="hover:opacity-70">PRESS</a>
-      <a href="#faq" class="hover:opacity-70">FAQ</a>
-      <a href="#" class="hover:opacity-70">INSTAGRAM</a>
-      <a href="#" class="hover:opacity-70">LINKEDIN</a>
-      <a href="#" class="hover:opacity-70">PRIVACY POLICY</a>
-      <a href="#" class="hover:opacity-70">GENERAL TERMS OF SERVICE</a>
-      <a href="#" class="hover:opacity-70">CONTENT GUIDELINES</a>
+      <a href="mailto:hello@flikk.co.in" class="hover:opacity-70 transition-opacity">EMAIL US</a>
+      <a href="#" class="hover:opacity-70 transition-opacity">PRESS</a>
+      <a href="#faq" class="hover:opacity-70 transition-opacity">FAQ</a>
+      <a href="#" class="hover:opacity-70 transition-opacity">INSTAGRAM</a>
+      <a href="#" class="hover:opacity-70 transition-opacity">LINKEDIN</a>
+      <a href="#" class="hover:opacity-70 transition-opacity">PRIVACY POLICY</a>
+      <a href="#" class="hover:opacity-70 transition-opacity">GENERAL TERMS OF SERVICE</a>
+      <a href="#" class="hover:opacity-70 transition-opacity">CONTENT GUIDELINES</a>
+      <a href="#" class="hover:opacity-70 transition-opacity">MANAGE COOKIES</a>
     </div>
     <div class="text-center mt-8 text-sm text-gray-500">© 2024 Flikk. Made with ❤️ in India.</div>
   </div>
