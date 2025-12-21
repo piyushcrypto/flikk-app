@@ -1,0 +1,373 @@
+<div class="min-h-screen flex">
+  <!-- Left Side - Form (Dark Theme) -->
+  <div class="w-full lg:w-1/2 bg-[#1a1a1a] flex flex-col justify-center items-center px-6 py-12">
+    <div class="w-full max-w-md">
+      <!-- Logo -->
+      <div class="text-center mb-10">
+        <a href="/" class="inline-flex items-center space-x-2">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-400 to-purple-400 flex items-center justify-center">
+            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+            </svg>
+          </div>
+          <span class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-orange-400 to-yellow-400">FLIKK</span>
+        </a>
+      </div>
+      
+      <!-- Title -->
+      <h1 class="font-display text-4xl md:text-5xl text-white text-center mb-8 tracking-wide">SIGN UP</h1>
+      
+      <!-- Error Messages -->
+      <% if resource.errors.any? %>
+        <div class="bg-red-500/20 border border-red-500/50 text-red-300 px-4 py-3 rounded-xl mb-6">
+          <ul class="list-disc list-inside text-sm">
+            <% resource.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+      
+      <!-- Multi-Step Form -->
+      <div id="signup-form-container">
+        <!-- Step 1: Email -->
+        <div id="step-1" class="step-content <%= @show_step_2 ? 'hidden' : '' %>">
+          <div class="space-y-5">
+            <!-- Email Address -->
+            <div>
+              <label class="block text-sm font-medium text-gray-300 mb-2">Email Address</label>
+              <input type="email" 
+                     id="email-step" 
+                     class="w-full bg-[#2a2a2a] border border-gray-600 rounded-xl px-4 py-4 text-white placeholder-gray-500 focus:outline-none focus:border-pink-400 focus:ring-1 focus:ring-pink-400 transition-colors"
+                     placeholder="hello@email.com"
+                     value="<%= @submitted_email %>"
+                     autofocus />
+            </div>
+            
+            <!-- Continue Button -->
+            <div class="pt-2">
+              <button type="button" 
+                      id="continue-to-step-2" 
+                      class="w-full bg-[#2a2a2a] text-gray-500 font-medium py-4 px-6 rounded-xl flex items-center justify-center space-x-2 transition-all duration-200 cursor-not-allowed"
+                      disabled>
+                <span>Continue</span>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Step 2: Name & Password -->
+        <div id="step-2" class="step-content <%= @show_step_2 ? '' : 'hidden' %>">
+          <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: "space-y-5", id: "registration-form" }) do |f| %>
+            <!-- Hidden Role Field -->
+            <%= f.hidden_field :role, value: (@role || :fan) %>
+            
+            <!-- Hidden Email Field (will be filled from step 1) -->
+            <%= f.hidden_field :email, id: "hidden-email", value: @submitted_email %>
+            
+            <!-- Back Button -->
+            <button type="button" 
+                    id="back-to-step-1"
+                    class="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors mb-4">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+              </svg>
+              <span class="text-sm">Back</span>
+            </button>
+            
+            <!-- Name Fields (First Name and Last Name) -->
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">First Name</label>
+                <input type="text" 
+                       id="first-name-field"
+                       class="w-full bg-[#2a2a2a] border border-gray-600 rounded-xl px-4 py-4 text-white placeholder-gray-500 focus:outline-none focus:border-pink-400 focus:ring-1 focus:ring-pink-400 transition-colors"
+                       placeholder="First name"
+                       value="<%= @submitted_name&.split(' ')&.first %>" />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">Last Name</label>
+                <input type="text" 
+                       id="last-name-field"
+                       class="w-full bg-[#2a2a2a] border border-gray-600 rounded-xl px-4 py-4 text-white placeholder-gray-500 focus:outline-none focus:border-pink-400 focus:ring-1 focus:ring-pink-400 transition-colors"
+                       placeholder="Last name"
+                       value="<%= @submitted_name&.split(' ')&.drop(1)&.join(' ') %>" />
+              </div>
+            </div>
+            
+            <!-- Hidden combined name field for Rails -->
+            <%= f.hidden_field :name, id: "hidden-name", value: @submitted_name %>
+            
+            <!-- Password -->
+            <div>
+              <label class="block text-sm font-medium text-gray-300 mb-2">Password</label>
+              <div class="relative">
+                <%= f.password_field :password, 
+                    id: "password-field",
+                    class: "w-full bg-[#2a2a2a] border border-gray-600 rounded-xl px-4 py-4 text-white placeholder-gray-500 focus:outline-none focus:border-pink-400 focus:ring-1 focus:ring-pink-400 transition-colors pr-12",
+                    placeholder: "Create a password",
+                    autocomplete: "new-password" %>
+                <button type="button" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300" onclick="togglePassword(this)">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            
+            <!-- Confirm Password -->
+            <div>
+              <label class="block text-sm font-medium text-gray-300 mb-2">Confirm Password</label>
+              <div class="relative">
+                <%= f.password_field :password_confirmation, 
+                    id: "password-confirmation-field",
+                    class: "w-full bg-[#2a2a2a] border border-gray-600 rounded-xl px-4 py-4 text-white placeholder-gray-500 focus:outline-none focus:border-pink-400 focus:ring-1 focus:ring-pink-400 transition-colors pr-12",
+                    placeholder: "Confirm your password",
+                    autocomplete: "new-password" %>
+                <button type="button" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300" onclick="togglePassword(this)">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            
+            <!-- Submit Button -->
+            <div class="pt-2">
+              <button type="submit" 
+                      id="signup-submit-btn"
+                      class="w-full bg-[#2a2a2a] text-gray-500 font-medium py-4 px-6 rounded-xl flex items-center justify-center space-x-2 transition-all duration-200 cursor-not-allowed">
+                <span>Create Account</span>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                </svg>
+              </button>
+            </div>
+          <% end %>
+        </div>
+      </div>
+      
+      <!-- Terms Text -->
+      <p class="text-center text-sm text-gray-400 mt-6">
+        By tapping Continue, you agree to our 
+        <a href="#" class="text-white underline hover:no-underline">Terms of Service</a> 
+        (including arbitration clause in Section 9), 
+        <a href="#" class="text-white underline hover:no-underline">Privacy Policy</a> and 
+        <a href="#" class="text-white underline hover:no-underline">Content Guidelines</a>
+      </p>
+      
+      <!-- Login Link -->
+      <div class="mt-6 space-y-2 text-center">
+        <p class="text-gray-400">
+          Already have an account? 
+          <%= link_to "Log in", new_user_session_path, class: "text-white font-semibold hover:underline" %>
+        </p>
+        
+        <!-- Creator Link (only show on fan registration) -->
+        <% if @role == :fan || @role.nil? %>
+          <p>
+            <%= link_to "Sign up as a creator", creator_registration_path, class: "text-gray-400 hover:text-white text-sm" %>
+          </p>
+        <% end %>
+      </div>
+      
+      <!-- Footer Links -->
+      <div class="flex flex-wrap justify-center gap-x-4 gap-y-2 text-xs text-gray-500 mt-10">
+        <a href="#" class="hover:text-gray-300">General Terms of Service</a>
+        <a href="#" class="hover:text-gray-300">Privacy Policy</a>
+        <a href="#" class="hover:text-gray-300">Content Guidelines</a>
+        <a href="#" class="hover:text-gray-300">Creator Terms of Use</a>
+        <a href="#" class="hover:text-gray-300">Fan Terms of Use</a>
+        <a href="#" class="hover:text-gray-300">Payment Terms and Conditions</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Side - Illustration (Dark gradient with 3D elements) -->
+  <div class="hidden lg:flex w-1/2 bg-gradient-to-br from-[#2a1a3a] via-[#1a2a3a] to-[#1a3a3a] relative overflow-hidden items-center justify-center">
+    <!-- 3D Gradient Background -->
+    <div class="absolute inset-0 overflow-hidden">
+      <!-- Chat Bubble Top Left -->
+      <div class="absolute top-16 left-16 w-44 h-36">
+        <div class="relative w-full h-full">
+          <div class="absolute inset-0 bg-gradient-to-br from-pink-400 via-pink-500 to-purple-500 rounded-[32px] transform rotate-[-12deg] shadow-2xl">
+            <div class="absolute top-6 left-8 flex space-x-2">
+              <div class="w-3 h-3 bg-purple-700/40 rounded-full"></div>
+              <div class="w-3 h-3 bg-purple-700/40 rounded-full"></div>
+              <div class="w-3 h-3 bg-purple-700/40 rounded-full"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Heart Top Right -->
+      <div class="absolute top-24 right-16 w-24 h-24">
+        <svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-2xl">
+          <defs>
+            <linearGradient id="heartGradientDark" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#67e8f9"/>
+              <stop offset="50%" style="stop-color:#a78bfa"/>
+              <stop offset="100%" style="stop-color:#c084fc"/>
+            </linearGradient>
+          </defs>
+          <path fill="url(#heartGradientDark)" d="M50 88.9l-4.1-3.7C19.5 61.4 3.1 46.9 3.1 29.1c0-12.5 9.8-22.4 22.2-22.4c7.1 0 14 3.4 18.4 8.7l6.3 7.5l6.3-7.5c4.4-5.3 11.3-8.7 18.4-8.7c12.4 0 22.2 9.9 22.2 22.4c0 17.8-16.4 32.3-42.8 56.1L50 88.9z"/>
+        </svg>
+      </div>
+      
+      <!-- Camera Bottom Left -->
+      <div class="absolute bottom-24 left-12 w-40 h-36">
+        <div class="relative w-full h-full">
+          <div class="absolute inset-0 bg-gradient-to-br from-pink-400 via-pink-500 to-fuchsia-500 rounded-[28px] shadow-2xl transform rotate-[8deg]">
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-gradient-to-br from-pink-200 to-pink-300 rounded-full border-4 border-pink-600/30">
+              <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-pink-400/50 rounded-full"></div>
+            </div>
+            <div class="absolute top-4 right-4 w-4 h-4 bg-pink-200/50 rounded-full"></div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Blob Bottom Right -->
+      <div class="absolute -bottom-10 -right-10 w-72 h-56">
+        <div class="w-full h-full bg-gradient-to-br from-pink-400 via-fuchsia-400 to-purple-500 rounded-tl-[100px] rounded-l-[80px] shadow-2xl opacity-90"></div>
+  </div>
+
+      <!-- Floating elements -->
+      <div class="absolute top-1/3 left-1/4 w-8 h-8 bg-gradient-to-br from-cyan-400/40 to-purple-400/40 rounded-full blur-sm"></div>
+      <div class="absolute top-1/2 right-1/3 w-6 h-6 bg-gradient-to-br from-pink-400/40 to-purple-400/40 rounded-full blur-sm"></div>
+  </div>
+
+    <!-- Main Text -->
+    <div class="relative z-10 text-center px-8">
+      <h2 class="font-display text-5xl md:text-6xl lg:text-7xl text-white leading-[1.1] tracking-wide">
+        TALK TO<br>
+        YOUR<br>
+        FAVORITE<br>
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-cyan-400">CREATORS</span>
+      </h2>
+    </div>
+  </div>
+</div>
+
+<script>
+function initSignupForm() {
+  const emailStep = document.getElementById('email-step');
+  const continueBtn = document.getElementById('continue-to-step-2');
+  const backBtn = document.getElementById('back-to-step-1');
+  const step1 = document.getElementById('step-1');
+  const step2 = document.getElementById('step-2');
+  const hiddenEmail = document.getElementById('hidden-email');
+  const hiddenName = document.getElementById('hidden-name');
+  const firstNameField = document.getElementById('first-name-field');
+  const lastNameField = document.getElementById('last-name-field');
+  const passwordField = document.getElementById('password-field');
+  const passwordConfirmField = document.getElementById('password-confirmation-field');
+  const registrationForm = document.getElementById('registration-form');
+  const signupSubmitBtn = document.getElementById('signup-submit-btn');
+  
+  if (!emailStep || !continueBtn) return;
+  
+  // Email validation
+  function isValidEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+  }
+  
+  // Update continue button state based on email validity
+  function updateContinueBtn() {
+    if (isValidEmail(emailStep.value)) {
+      continueBtn.disabled = false;
+      continueBtn.classList.remove('bg-[#2a2a2a]', 'text-gray-500', 'cursor-not-allowed');
+      continueBtn.classList.add('bg-gradient-to-r', 'from-pink-500', 'to-purple-500', 'text-white', 'cursor-pointer', 'hover:from-pink-600', 'hover:to-purple-600');
+    } else {
+      continueBtn.disabled = true;
+      continueBtn.classList.remove('bg-gradient-to-r', 'from-pink-500', 'to-purple-500', 'text-white', 'cursor-pointer', 'hover:from-pink-600', 'hover:to-purple-600');
+      continueBtn.classList.add('bg-[#2a2a2a]', 'text-gray-500', 'cursor-not-allowed');
+    }
+  }
+  
+  // Update signup button state based on form completeness
+  function updateSignupBtn() {
+    if (!signupSubmitBtn || !firstNameField || !passwordField || !passwordConfirmField) return;
+    
+    const firstName = firstNameField.value.trim();
+    const password = passwordField.value;
+    const confirmPassword = passwordConfirmField.value;
+    
+    const isValid = firstName.length > 0 && password.length >= 6 && password === confirmPassword;
+    
+    if (isValid) {
+      signupSubmitBtn.classList.remove('bg-[#2a2a2a]', 'text-gray-500', 'cursor-not-allowed');
+      signupSubmitBtn.classList.add('bg-gradient-to-r', 'from-pink-500', 'to-purple-500', 'text-white', 'cursor-pointer', 'hover:from-pink-600', 'hover:to-purple-600');
+    } else {
+      signupSubmitBtn.classList.remove('bg-gradient-to-r', 'from-pink-500', 'to-purple-500', 'text-white', 'cursor-pointer', 'hover:from-pink-600', 'hover:to-purple-600');
+      signupSubmitBtn.classList.add('bg-[#2a2a2a]', 'text-gray-500', 'cursor-not-allowed');
+    }
+  }
+  
+  // Enable/disable continue button based on email validity
+  emailStep.addEventListener('input', updateContinueBtn);
+  
+  // Continue to step 2
+  continueBtn.addEventListener('click', function() {
+    if (isValidEmail(emailStep.value)) {
+      hiddenEmail.value = emailStep.value;
+      step1.classList.add('hidden');
+      step2.classList.remove('hidden');
+      if (firstNameField) firstNameField.focus();
+    }
+  });
+  
+  // Allow Enter key to continue
+  emailStep.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter' && isValidEmail(this.value)) {
+      e.preventDefault();
+      continueBtn.click();
+    }
+  });
+  
+  // Back to step 1
+  if (backBtn) {
+    backBtn.addEventListener('click', function() {
+      step2.classList.add('hidden');
+      step1.classList.remove('hidden');
+      emailStep.value = hiddenEmail.value; // Preserve email
+      emailStep.focus();
+      updateContinueBtn();
+    });
+  }
+  
+  // Update signup button on input changes
+  if (firstNameField) firstNameField.addEventListener('input', updateSignupBtn);
+  if (lastNameField) lastNameField.addEventListener('input', updateSignupBtn);
+  if (passwordField) passwordField.addEventListener('input', updateSignupBtn);
+  if (passwordConfirmField) passwordConfirmField.addEventListener('input', updateSignupBtn);
+  
+  // Combine first and last name before form submission
+  if (registrationForm) {
+    registrationForm.addEventListener('submit', function(e) {
+      const firstName = firstNameField ? firstNameField.value.trim() : '';
+      const lastName = lastNameField ? lastNameField.value.trim() : '';
+      if (hiddenName) hiddenName.value = firstName + (lastName ? ' ' + lastName : '');
+    });
+  }
+  
+  // Initialize button states
+  updateContinueBtn();
+  updateSignupBtn();
+}
+
+document.addEventListener('DOMContentLoaded', initSignupForm);
+document.addEventListener('turbo:load', initSignupForm);
+document.addEventListener('turbo:render', initSignupForm);
+
+function togglePassword(button) {
+  const input = button.parentElement.querySelector('input');
+  const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+  input.setAttribute('type', type);
+}
+</script>

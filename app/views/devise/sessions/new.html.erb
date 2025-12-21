@@ -1,0 +1,268 @@
+<div class="min-h-screen flex">
+  <!-- Left Side - Form (Light Theme matching Fanfix) -->
+  <div class="w-full lg:w-1/2 bg-white flex flex-col justify-center items-center px-6 py-12">
+    <div class="w-full max-w-md">
+      <!-- Logo -->
+      <div class="text-center mb-10">
+        <a href="/" class="inline-flex items-center space-x-2">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-400 to-purple-400 flex items-center justify-center">
+            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+            </svg>
+          </div>
+          <span class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-orange-400 to-yellow-400">FLIKK</span>
+        </a>
+      </div>
+      
+      <!-- Title -->
+      <h1 class="font-display text-4xl md:text-5xl text-black text-center mb-8 tracking-wide">LOG IN</h1>
+      
+      <!-- Social Login Buttons -->
+      <div class="flex gap-4 mb-6">
+        <button type="button" class="flex-1 bg-gray-100 hover:bg-gray-200 border border-gray-200 rounded-xl py-4 flex items-center justify-center transition-colors">
+          <!-- Google Icon -->
+          <svg class="w-6 h-6" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+          </svg>
+        </button>
+        <button type="button" class="flex-1 bg-gray-100 hover:bg-gray-200 border border-gray-200 rounded-xl py-4 flex items-center justify-center transition-colors">
+          <!-- Apple Icon -->
+          <svg class="w-6 h-6 text-black" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+          </svg>
+        </button>
+      </div>
+      
+      <!-- Divider -->
+      <div class="flex items-center gap-4 mb-6">
+        <div class="flex-1 h-px bg-gray-200"></div>
+        <span class="text-gray-400 text-sm">or</span>
+        <div class="flex-1 h-px bg-gray-200"></div>
+      </div>
+      
+      <!-- Error Messages -->
+      <% if flash[:alert] %>
+        <div class="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl mb-6">
+          <p class="text-sm"><%= flash[:alert] %></p>
+        </div>
+      <% end %>
+      
+      <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "space-y-5" }) do |f| %>
+        <!-- Email Address -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+          <%= f.email_field :email, 
+              class: "w-full bg-white border border-gray-200 rounded-xl px-4 py-4 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-pink-400 focus:ring-1 focus:ring-pink-400 transition-colors",
+              placeholder: "hello@email.com",
+              autofocus: true %>
+        </div>
+        
+        <!-- Password -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+          <div class="relative">
+            <%= f.password_field :password, 
+                class: "w-full bg-white border border-gray-200 rounded-xl px-4 py-4 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-pink-400 focus:ring-1 focus:ring-pink-400 transition-colors pr-12",
+                placeholder: "Enter your password",
+                autocomplete: "current-password" %>
+            <button type="button" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600" onclick="togglePassword(this)">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Submit Button -->
+        <div class="pt-2">
+          <button type="submit" 
+                  id="login-submit-btn"
+                  class="w-full bg-gray-200 text-gray-400 font-medium py-4 px-6 rounded-xl flex items-center justify-center space-x-2 transition-all duration-200 cursor-not-allowed"
+                  disabled>
+            <span>Continue</span>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+            </svg>
+          </button>
+        </div>
+      <% end %>
+      
+      <!-- Terms Text -->
+      <p class="text-center text-sm text-gray-500 mt-6">
+        By tapping Continue, you agree to our 
+        <a href="#" class="text-gray-800 underline hover:no-underline">Terms of Service</a> 
+        (including arbitration clause in Section 9), 
+        <a href="#" class="text-gray-800 underline hover:no-underline">Privacy Policy</a> and 
+        <a href="#" class="text-gray-800 underline hover:no-underline">Content Guidelines</a>
+      </p>
+      
+      <!-- Sign Up Links -->
+      <div class="mt-6 space-y-2 text-center">
+        <p class="text-gray-500">
+          Don't have an account? 
+          <%= link_to "Sign up", fan_registration_path, class: "text-gray-800 font-semibold hover:underline" %>
+        </p>
+        <p>
+          <%= link_to "Forgot password", new_password_path(resource_name), class: "text-gray-500 hover:text-gray-800 text-sm" %>
+        </p>
+        <p>
+          <%= link_to "Sign up as a creator", creator_registration_path, class: "text-gray-500 hover:text-gray-800 text-sm" %>
+        </p>
+      </div>
+      
+      <!-- Footer Links -->
+      <div class="flex flex-wrap justify-center gap-x-4 gap-y-2 text-xs text-gray-400 mt-10">
+        <a href="#" class="hover:text-gray-600">General Terms of Service</a>
+        <a href="#" class="hover:text-gray-600">Privacy Policy</a>
+        <a href="#" class="hover:text-gray-600">Content Guidelines</a>
+        <a href="#" class="hover:text-gray-600">Creator Terms of Use</a>
+        <a href="#" class="hover:text-gray-600">Fan Terms of Use</a>
+        <a href="#" class="hover:text-gray-600">Payment Terms and Conditions</a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Right Side - Illustration (Gradient with 3D elements) -->
+  <div class="hidden lg:flex w-1/2 bg-gradient-to-br from-pink-300 via-purple-300 to-cyan-300 relative overflow-hidden items-center justify-center">
+    <!-- 3D Objects -->
+    <div class="absolute inset-0 overflow-hidden">
+      <!-- Chat Bubble Top Left - Pink/Purple gradient -->
+      <div class="absolute top-16 left-16 w-44 h-36">
+        <div class="relative w-full h-full">
+          <div class="absolute inset-0 bg-gradient-to-br from-pink-400 via-pink-500 to-purple-500 rounded-[32px] transform rotate-[-12deg] shadow-2xl">
+            <!-- Three dots on the chat bubble -->
+            <div class="absolute top-6 left-8 flex space-x-2">
+              <div class="w-3 h-3 bg-purple-700/40 rounded-full"></div>
+              <div class="w-3 h-3 bg-purple-700/40 rounded-full"></div>
+              <div class="w-3 h-3 bg-purple-700/40 rounded-full"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Heart Top Right - Cyan/Teal gradient -->
+      <div class="absolute top-24 right-16 w-24 h-24">
+        <svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-2xl">
+          <defs>
+            <linearGradient id="heartGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#67e8f9"/>
+              <stop offset="50%" style="stop-color:#a78bfa"/>
+              <stop offset="100%" style="stop-color:#c084fc"/>
+            </linearGradient>
+          </defs>
+          <path fill="url(#heartGradient)" d="M50 88.9l-4.1-3.7C19.5 61.4 3.1 46.9 3.1 29.1c0-12.5 9.8-22.4 22.2-22.4c7.1 0 14 3.4 18.4 8.7l6.3 7.5l6.3-7.5c4.4-5.3 11.3-8.7 18.4-8.7c12.4 0 22.2 9.9 22.2 22.4c0 17.8-16.4 32.3-42.8 56.1L50 88.9z"/>
+        </svg>
+      </div>
+      
+      <!-- Camera Bottom Left - Pink gradient -->
+      <div class="absolute bottom-24 left-12 w-40 h-36">
+        <div class="relative w-full h-full">
+          <div class="absolute inset-0 bg-gradient-to-br from-pink-400 via-pink-500 to-fuchsia-500 rounded-[28px] shadow-2xl transform rotate-[8deg]">
+            <!-- Camera lens -->
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-gradient-to-br from-pink-200 to-pink-300 rounded-full border-4 border-pink-600/30">
+              <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-pink-400/50 rounded-full"></div>
+            </div>
+            <!-- Flash -->
+            <div class="absolute top-4 right-4 w-4 h-4 bg-pink-200/50 rounded-full"></div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Blob Bottom Right - Pink/Purple organic shape -->
+      <div class="absolute -bottom-10 -right-10 w-72 h-56">
+        <div class="w-full h-full bg-gradient-to-br from-pink-400 via-fuchsia-400 to-purple-500 rounded-tl-[100px] rounded-l-[80px] shadow-2xl opacity-90"></div>
+      </div>
+      
+      <!-- Small floating elements -->
+      <div class="absolute top-1/3 left-1/4 w-6 h-6 bg-gradient-to-br from-cyan-300 to-purple-400 rounded-full opacity-60 blur-sm"></div>
+      <div class="absolute top-1/2 right-1/3 w-4 h-4 bg-gradient-to-br from-pink-300 to-purple-400 rounded-full opacity-60 blur-sm"></div>
+    </div>
+    
+    <!-- Main Text -->
+    <div class="relative z-10 text-center px-8">
+      <h2 class="font-display text-5xl md:text-6xl lg:text-7xl text-black leading-[1.1] tracking-wide">
+        TALK TO<br>
+        YOUR<br>
+        FAVORITE<br>
+        <span class="text-black">CREATORS</span>
+      </h2>
+    </div>
+  </div>
+</div>
+
+<script>
+function togglePassword(button) {
+  const input = button.parentElement.querySelector('input');
+  const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+  input.setAttribute('type', type);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const emailField = document.getElementById('user_email');
+  const passwordField = document.getElementById('user_password');
+  const submitBtn = document.getElementById('login-submit-btn');
+  
+  function isValidEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+  }
+  
+  function updateButtonState() {
+    const email = emailField ? emailField.value : '';
+    const password = passwordField ? passwordField.value : '';
+    
+    if (isValidEmail(email) && password.length >= 6) {
+      submitBtn.disabled = false;
+      submitBtn.classList.remove('bg-gray-200', 'text-gray-400', 'cursor-not-allowed');
+      submitBtn.classList.add('bg-black', 'text-white', 'hover:bg-gray-800', 'cursor-pointer');
+    } else {
+      submitBtn.disabled = false; // Keep it clickable for form validation
+      submitBtn.classList.remove('bg-black', 'text-white', 'hover:bg-gray-800', 'cursor-pointer');
+      submitBtn.classList.add('bg-gray-200', 'text-gray-400', 'cursor-not-allowed');
+    }
+  }
+  
+  if (emailField) emailField.addEventListener('input', updateButtonState);
+  if (passwordField) passwordField.addEventListener('input', updateButtonState);
+  
+  // Check initial state
+  updateButtonState();
+});
+
+// Also listen for turbo:load for Turbo navigation
+document.addEventListener('turbo:load', function() {
+  const emailField = document.getElementById('user_email');
+  const passwordField = document.getElementById('user_password');
+  const submitBtn = document.getElementById('login-submit-btn');
+  
+  if (!emailField || !passwordField || !submitBtn) return;
+  
+  function isValidEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+  }
+  
+  function updateButtonState() {
+    const email = emailField.value;
+    const password = passwordField.value;
+    
+    if (isValidEmail(email) && password.length >= 6) {
+      submitBtn.disabled = false;
+      submitBtn.classList.remove('bg-gray-200', 'text-gray-400', 'cursor-not-allowed');
+      submitBtn.classList.add('bg-black', 'text-white', 'hover:bg-gray-800', 'cursor-pointer');
+    } else {
+      submitBtn.disabled = false;
+      submitBtn.classList.remove('bg-black', 'text-white', 'hover:bg-gray-800', 'cursor-pointer');
+      submitBtn.classList.add('bg-gray-200', 'text-gray-400', 'cursor-not-allowed');
+    }
+  }
+  
+  emailField.addEventListener('input', updateButtonState);
+  passwordField.addEventListener('input', updateButtonState);
+  updateButtonState();
+});
+</script>

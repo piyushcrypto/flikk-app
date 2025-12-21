@@ -1,0 +1,737 @@
+<!-- Fixed Navigation -->
+<nav class="fixed top-0 left-0 right-0 z-50 bg-[#f9f9f9]/90 backdrop-blur-md">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16 md:h-20">
+      <!-- Logo Left - Checkmark Icon -->
+      <div class="flex items-center">
+        <a href="/" class="flex items-center">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-pink-300 via-pink-400 to-purple-400 flex items-center justify-center shadow-lg">
+            <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+            </svg>
+          </div>
+        </a>
+      </div>
+      
+      <!-- Center Logo -->
+      <a href="/" class="absolute left-1/2 -translate-x-1/2">
+        <span class="font-display text-3xl md:text-4xl logo-gradient font-bold tracking-wider">FLIKK</span>
+      </a>
+      
+      <!-- Right - Auth Buttons -->
+      <div class="flex items-center space-x-4">
+        <%= link_to "Log in", new_user_session_path, class: "text-black font-medium hover:opacity-70 transition-opacity hidden sm:block" %>
+        <%= link_to fan_registration_path, class: "btn-secondary px-5 py-2.5 text-sm font-semibold flex items-center space-x-2" do %>
+          <span>Sign up</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+          </svg>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="relative min-h-screen overflow-hidden bg-[#f9f9f9]" id="hero-section">
+  <!-- Background Creator Photo Grid (Faded) -->
+  <div class="absolute inset-0 overflow-hidden opacity-30">
+    <div class="grid grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-1 p-2 -m-4 transform rotate-0">
+      <% 80.times do |i| %>
+        <div class="aspect-[3/4] rounded-lg overflow-hidden bg-gradient-to-br <%= ['from-pink-200 to-purple-200', 'from-blue-200 to-teal-200', 'from-orange-200 to-pink-200', 'from-green-200 to-blue-200', 'from-purple-200 to-pink-200'].sample %>">
+          <div class="w-full h-full bg-gradient-to-b from-transparent via-transparent to-black/10"></div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+  
+  <!-- Main Content Container -->
+  <div class="relative z-10 pt-28 md:pt-32">
+    <!-- Headline -->
+    <div class="text-center px-4 mb-8 md:mb-12">
+      <h1 class="font-display text-[clamp(2.5rem,8vw,5.5rem)] leading-[0.95] text-black tracking-tight">
+        JOIN A POWERFUL<br>
+        COMMUNITY OF CREATORS
+      </h1>
+    </div>
+    
+    <!-- CTA Button with QR -->
+    <div class="flex justify-center items-center gap-4 mb-12 md:mb-16 px-4">
+      <%= link_to creator_registration_path, class: "btn-primary px-8 py-4 text-base font-semibold flex items-center space-x-3" do %>
+        <span>Apply to create on Flikk</span>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+        </svg>
+      <% end %>
+    </div>
+    
+    <!-- Creator Cards Section with Parallax -->
+    <div class="relative" id="creator-cards-container">
+      <!-- Pink Accent Block - Left -->
+      <div class="hidden lg:block absolute left-0 top-0 w-40 h-[500px] bg-[#FFB6C1] rounded-r-3xl z-0 transform -translate-y-16"></div>
+      
+      <!-- Blue/Mint Accent Block - Right Top -->
+      <div class="hidden lg:block absolute right-0 top-0 w-40 h-[300px] bg-[#B0E0E6] rounded-l-3xl z-0 transform -translate-y-16" id="accent-right-top"></div>
+      
+      <!-- Red/Coral Accent Block - Right Bottom -->
+      <div class="hidden lg:block absolute right-0 top-[280px] w-40 h-[300px] bg-[#FF6B6B] rounded-l-3xl z-0" id="accent-right-bottom"></div>
+      
+      <!-- Cards Container -->
+      <div class="max-w-6xl mx-auto px-4 lg:px-20 relative z-10">
+        <!-- First Row of Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-4 md:mb-6" id="cards-row-1">
+          <!-- Card 1 - Left -->
+          <div class="creator-card-v2 transform transition-all duration-700 ease-out" data-parallax="0.15">
+            <div class="relative rounded-2xl overflow-hidden shadow-xl bg-white">
+              <div class="aspect-[3/4] bg-gradient-to-br from-blue-400 via-sky-300 to-cyan-400 relative">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=600&fit=crop&crop=face" alt="Priya" class="w-full h-full object-cover">
+              </div>
+              <div class="absolute bottom-4 left-4 right-4">
+                <div class="bg-white/95 backdrop-blur-sm rounded-xl px-4 py-2.5 flex items-center space-x-3 shadow-lg">
+                  <div class="w-9 h-9 rounded-full overflow-hidden border-2 border-white shadow">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=face" alt="" class="w-full h-full object-cover">
+                  </div>
+                  <div>
+                    <div class="flex items-center space-x-1">
+                      <span class="font-semibold text-sm text-black">Priya</span>
+                      <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                      </svg>
+                    </div>
+                    <div class="text-xs text-gray-500">@priyacreates</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Card 2 - Center (with QR code) -->
+          <div class="creator-card-v2 transform transition-all duration-700 ease-out" data-parallax="0.1">
+            <div class="relative rounded-2xl overflow-hidden shadow-xl bg-white">
+              <div class="absolute -top-2 -right-2 z-20">
+                <div class="bg-gradient-to-br from-pink-400 via-purple-400 to-cyan-400 p-1 rounded-xl shadow-lg">
+                  <div class="bg-white p-2 rounded-lg">
+                    <div class="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-pink-50 to-purple-50 rounded flex items-center justify-center">
+                      <svg class="w-14 h-14 md:w-16 md:h-16 text-black" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M3 3h6v6H3V3zm2 2v2h2V5H5zm8-2h6v6h-6V3zm2 2v2h2V5h-2zM3 13h6v6H3v-6zm2 2v2h2v-2H5zm13-2h1v1h-1v-1zm-3 0h1v3h-1v-3zm-1 3h1v1h-1v-1zm2 1h1v1h-1v-1zm1-1h3v1h-3v-1zm0 2h1v2h-1v-2zm-4-3h1v1h-1v-1zm1 1h1v1h-1v-1zm2 2h1v1h-1v-1zm1 1h2v1h-2v-1zm1-2h2v1h-2v-1z"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="aspect-[3/4] bg-gradient-to-br from-orange-300 via-amber-200 to-yellow-300 relative">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=600&fit=crop&crop=face" alt="Arjun" class="w-full h-full object-cover">
+              </div>
+              <div class="absolute bottom-4 left-4 right-4">
+                <div class="bg-white/95 backdrop-blur-sm rounded-xl px-4 py-2.5 flex items-center space-x-3 shadow-lg">
+                  <div class="w-9 h-9 rounded-full overflow-hidden border-2 border-white shadow">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face" alt="" class="w-full h-full object-cover">
+                  </div>
+                  <div>
+                    <div class="flex items-center space-x-1">
+                      <span class="font-semibold text-sm text-black">Arjun</span>
+                      <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                      </svg>
+                    </div>
+                    <div class="text-xs text-gray-500">@arjunfitness</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Card 3 - Right -->
+          <div class="creator-card-v2 transform transition-all duration-700 ease-out" data-parallax="0.2">
+            <div class="relative rounded-2xl overflow-hidden shadow-xl bg-white">
+              <div class="aspect-[3/4] bg-gradient-to-br from-purple-400 via-pink-300 to-rose-400 relative">
+                <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=600&fit=crop&crop=face" alt="Karan" class="w-full h-full object-cover">
+              </div>
+              <div class="absolute bottom-4 left-4 right-4">
+                <div class="bg-white/95 backdrop-blur-sm rounded-xl px-4 py-2.5 flex items-center space-x-3 shadow-lg">
+                  <div class="w-9 h-9 rounded-full overflow-hidden border-2 border-white shadow">
+                    <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=100&h=100&fit=crop&crop=face" alt="" class="w-full h-full object-cover">
+                  </div>
+                  <div>
+                    <div class="flex items-center space-x-1">
+                      <span class="font-semibold text-sm text-black">Karan</span>
+                      <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                      </svg>
+                    </div>
+                    <div class="text-xs text-gray-500">@karancomedy</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Second Row of Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6" id="cards-row-2">
+          <!-- Card 4 - Left -->
+          <div class="creator-card-v2 transform transition-all duration-700 ease-out" data-parallax="0.25">
+            <div class="relative rounded-2xl overflow-hidden shadow-xl bg-white">
+              <div class="aspect-[3/4] bg-gradient-to-br from-teal-400 via-emerald-300 to-green-400 relative">
+                <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&h=600&fit=crop&crop=face" alt="Ananya" class="w-full h-full object-cover">
+              </div>
+              <div class="absolute bottom-4 left-4 right-4">
+                <div class="bg-white/95 backdrop-blur-sm rounded-xl px-4 py-2.5 flex items-center space-x-3 shadow-lg">
+                  <div class="w-9 h-9 rounded-full overflow-hidden border-2 border-white shadow">
+                    <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=100&h=100&fit=crop&crop=face" alt="" class="w-full h-full object-cover">
+                  </div>
+                  <div>
+                    <div class="flex items-center space-x-1">
+                      <span class="font-semibold text-sm text-black">Ananya</span>
+                      <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                      </svg>
+                    </div>
+                    <div class="text-xs text-gray-500">@ananyamusic</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Card 5 - Center -->
+          <div class="creator-card-v2 transform transition-all duration-700 ease-out" data-parallax="0.18">
+            <div class="relative rounded-2xl overflow-hidden shadow-xl bg-white">
+              <div class="aspect-[3/4] bg-gradient-to-br from-rose-400 via-pink-300 to-fuchsia-400 relative">
+                <img src="https://images.unsplash.com/photo-1522556189639-b150ed9c4330?w=400&h=600&fit=crop&crop=face" alt="Vikram" class="w-full h-full object-cover">
+              </div>
+              <div class="absolute bottom-4 left-4 right-4">
+                <div class="bg-white/95 backdrop-blur-sm rounded-xl px-3 py-2 flex items-center space-x-2 shadow-lg inline-flex">
+                  <div class="w-7 h-7 rounded-full overflow-hidden border-2 border-white shadow">
+                    <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face" alt="" class="w-full h-full object-cover">
+                  </div>
+                  <div>
+                    <div class="flex items-center space-x-1">
+                      <span class="font-semibold text-xs text-black">Vikram</span>
+                      <svg class="w-3 h-3 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                      </svg>
+                    </div>
+                    <div class="text-[10px] text-gray-500">@vikramfood</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Card 6 - Right -->
+          <div class="creator-card-v2 transform transition-all duration-700 ease-out" data-parallax="0.22">
+            <div class="relative rounded-2xl overflow-hidden shadow-xl bg-white">
+              <div class="aspect-[3/4] bg-gradient-to-br from-amber-400 via-orange-300 to-red-400 relative">
+                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=600&fit=crop&crop=face" alt="Riya" class="w-full h-full object-cover">
+              </div>
+              <div class="absolute bottom-4 left-4 right-4">
+                <div class="bg-white/95 backdrop-blur-sm rounded-xl px-4 py-2.5 flex items-center space-x-3 shadow-lg">
+                  <div class="w-9 h-9 rounded-full overflow-hidden border-2 border-white shadow">
+                    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face" alt="" class="w-full h-full object-cover">
+                  </div>
+                  <div>
+                    <div class="flex items-center space-x-1">
+                      <span class="font-semibold text-sm text-black">Riya</span>
+                      <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                      </svg>
+                    </div>
+                    <div class="text-xs text-gray-500">@riyalifestyle</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- About Section -->
+<section class="py-20 bg-white">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <p class="text-lg md:text-xl text-gray-700 leading-relaxed mb-6">
+      Flikk is a community of over <strong>15 million</strong> creators, entertainers, thought leaders, entrepreneurs, fans, and friends who connect online and in real life. 
+      When you join Flikk as a creator, you receive personalized service from our team to ensure a successful launch and ongoing community support.
+    </p>
+    <p class="text-lg md:text-xl text-gray-700 leading-relaxed">
+      Our <strong>brand-safe environment</strong>—free from nudity and explicit content—ensures your content thrives. 
+      Top Flikk creators <span class="text-pink-500 font-semibold">earn over ₹1 crore each month!</span> Will you be next?
+    </p>
+  </div>
+</section>
+
+<!-- How It Works Section - Horizontal Scrollable Cards -->
+<section id="features" class="py-16 lg:py-24 bg-[#f9f9f9]">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col lg:flex-row lg:items-start gap-8 lg:gap-16">
+      <!-- Left Side - Text -->
+      <div class="lg:w-2/5 lg:sticky lg:top-24">
+        <h2 class="font-display text-4xl md:text-5xl lg:text-6xl text-black leading-[1.05] mb-6">
+          IT'S EASY TO<br>
+          START EARNING.<br>
+          HERE'S HOW 👉
+        </h2>
+        <a href="#testimonials" class="inline-flex items-center space-x-2 bg-black text-white px-6 py-3 rounded-full font-medium hover:bg-gray-800 transition-colors">
+          <span>Hear from Creators</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </a>
+      </div>
+      
+      <!-- Right Side - Horizontally Scrollable Cards (Both Mobile & Desktop) -->
+      <div class="lg:w-3/5">
+        <div class="overflow-x-auto pb-4 -mx-4 px-4 hide-scrollbar">
+          <div class="flex space-x-4 lg:space-x-6" style="width: max-content;">
+            <!-- Card 1: Apply to Join -->
+            <div class="w-80 lg:w-96 flex-shrink-0 rounded-3xl p-6 lg:p-8 shadow-xl" style="background: linear-gradient(135deg, #FF9FCD 0%, #FFB6D9 50%, #FFCCE5 100%);">
+              <h3 class="font-display text-2xl lg:text-3xl text-black mb-3 lg:mb-4">APPLY TO JOIN</h3>
+              <p class="text-gray-800 text-sm lg:text-base mb-4 lg:mb-6">
+                You just need at least <strong>10K followers</strong> across platforms to apply. <strong>Flikk welcomes creators of all types!</strong>
+              </p>
+              <div class="flex flex-wrap gap-1.5 lg:gap-2">
+                <span class="bg-white/80 px-3 py-1.5 rounded-full text-xs lg:text-sm font-medium">💄 Beauty</span>
+                <span class="bg-white/80 px-3 py-1.5 rounded-full text-xs lg:text-sm font-medium">💼 Business</span>
+                <span class="bg-white/80 px-3 py-1.5 rounded-full text-xs lg:text-sm font-medium">😂 Comedy</span>
+                <span class="bg-white/80 px-3 py-1.5 rounded-full text-xs lg:text-sm font-medium">👗 Cosplay</span>
+                <span class="bg-white/80 px-3 py-1.5 rounded-full text-xs lg:text-sm font-medium">👜 Fashion</span>
+                <span class="bg-white/80 px-3 py-1.5 rounded-full text-xs lg:text-sm font-medium">📈 Finance</span>
+                <span class="bg-white/80 px-3 py-1.5 rounded-full text-xs lg:text-sm font-medium">💪 Fitness</span>
+                <span class="bg-white/80 px-3 py-1.5 rounded-full text-xs lg:text-sm font-medium">🍔 Food</span>
+                <span class="bg-white/80 px-3 py-1.5 rounded-full text-xs lg:text-sm font-medium">🎮 Gaming</span>
+                <span class="bg-white/80 px-3 py-1.5 rounded-full text-xs lg:text-sm font-medium">🧘 Wellness</span>
+                <span class="bg-white/80 px-3 py-1.5 rounded-full text-xs lg:text-sm font-medium">💖 Lifestyle</span>
+                <span class="bg-white/80 px-3 py-1.5 rounded-full text-xs lg:text-sm font-medium">🎵 Music</span>
+              </div>
+            </div>
+            
+            <!-- Card 2: Get Verified -->
+            <div class="w-80 lg:w-96 flex-shrink-0 rounded-3xl p-6 lg:p-8 shadow-xl flex flex-col justify-center" style="background: linear-gradient(135deg, #E4FF1A 0%, #D4F500 50%, #C4E500 100%);">
+              <h3 class="font-display text-2xl lg:text-3xl text-black mb-3 lg:mb-4">GET VERIFIED</h3>
+              <p class="text-gray-800 text-sm lg:text-base">
+                Verify your age and identity so you can start posting and get paid.
+              </p>
+            </div>
+            
+            <!-- Card 3: Post -->
+            <div class="w-80 lg:w-96 flex-shrink-0 rounded-3xl p-6 lg:p-8 shadow-xl relative overflow-hidden" style="background: linear-gradient(135deg, #FF6B6B 0%, #FF8080 50%, #FF9595 100%);">
+              <h3 class="font-display text-2xl lg:text-3xl text-black mb-3 lg:mb-4">POST</h3>
+              <p class="text-gray-800 text-sm lg:text-base mb-3">
+                Publish original content on Flikk and share your new page with all of your social followers.
+              </p>
+              <p class="text-gray-800 text-sm lg:text-base font-semibold">
+                Flikk is brand-friendly, and we don't allow nudity or explicit content.
+              </p>
+              <!-- 3D Camera Illustration -->
+              <div class="absolute -bottom-4 -right-4 w-32 h-28 lg:w-40 lg:h-36">
+                <div class="w-24 h-20 lg:w-32 lg:h-28 bg-gradient-to-br from-red-400 to-red-600 rounded-3xl transform rotate-[-10deg] shadow-xl">
+                  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 lg:w-14 lg:h-14 bg-gradient-to-br from-red-200 to-red-300 rounded-full border-4 border-red-500/50"></div>
+                  <div class="absolute top-2 right-2 lg:top-3 lg:right-3 w-2 h-2 lg:w-3 lg:h-3 bg-red-700/50 rounded-full"></div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Card 4: Engage -->
+            <div class="w-80 lg:w-96 flex-shrink-0 rounded-3xl p-6 lg:p-8 shadow-xl flex flex-col justify-center" style="background: linear-gradient(135deg, #98F5E1 0%, #7EECD1 50%, #64E3C1 100%);">
+              <h3 class="font-display text-2xl lg:text-3xl text-black mb-3 lg:mb-4">ENGAGE</h3>
+              <p class="text-gray-800 text-sm lg:text-base">
+                Keep posting, go behind-the-scenes, and engage further with your paid subscribers. <strong>You control the pricing for your content.</strong>
+              </p>
+            </div>
+            
+            <!-- Card 5: Get Paid -->
+            <div class="w-80 lg:w-96 flex-shrink-0 rounded-3xl p-6 lg:p-8 shadow-xl" style="background: linear-gradient(135deg, #C4B5FD 0%, #A78BFA 50%, #8B5CF6 100%);">
+              <h3 class="font-display text-2xl lg:text-3xl text-white mb-3 lg:mb-4">GET PAID</h3>
+              <p class="text-white/90 text-sm lg:text-base mb-4 lg:mb-6">
+                Get paid from tips, unlocked content, live streams, DMs, and more. <strong>You keep 80% of all of your earnings</strong>, and Flikk keeps 20% to keep the platform running.
+              </p>
+              <div class="grid grid-cols-4 gap-2 lg:gap-3">
+                <div class="bg-white/20 backdrop-blur-sm rounded-xl p-2 lg:p-3 text-center">
+                  <div class="text-lg lg:text-2xl mb-1">💬</div>
+                  <div class="text-[10px] lg:text-xs font-medium text-white">DMs</div>
+                </div>
+                <div class="bg-white/20 backdrop-blur-sm rounded-xl p-2 lg:p-3 text-center">
+                  <div class="text-lg lg:text-2xl mb-1">💰</div>
+                  <div class="text-[10px] lg:text-xs font-medium text-white">Subs</div>
+                </div>
+                <div class="bg-white/20 backdrop-blur-sm rounded-xl p-2 lg:p-3 text-center">
+                  <div class="text-lg lg:text-2xl mb-1">🎁</div>
+                  <div class="text-[10px] lg:text-xs font-medium text-white">Tips</div>
+                </div>
+                <div class="bg-white/20 backdrop-blur-sm rounded-xl p-2 lg:p-3 text-center">
+                  <div class="text-lg lg:text-2xl mb-1">🔓</div>
+                  <div class="text-[10px] lg:text-xs font-medium text-white">Unlock</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Hero Parallax JavaScript -->
+<script>
+(function() {
+  let scrollHandler = null;
+  
+  function initParallax() {
+    const cardsRow1 = document.getElementById('cards-row-1');
+    const cardsRow2 = document.getElementById('cards-row-2');
+    
+    // Remove previous scroll handler if exists
+    if (scrollHandler) {
+      window.removeEventListener('scroll', scrollHandler);
+    }
+    
+    function handleHeroParallax() {
+      const scrollY = window.scrollY;
+      
+      if (cardsRow1) {
+        const cards1 = cardsRow1.querySelectorAll('.creator-card-v2');
+        cards1.forEach((card) => {
+          const parallaxFactor = parseFloat(card.dataset.parallax) || 0.1;
+          const translateY = scrollY * parallaxFactor * -1;
+          card.style.transform = `translateY(${translateY}px)`;
+        });
+      }
+      
+      if (cardsRow2) {
+        const cards2 = cardsRow2.querySelectorAll('.creator-card-v2');
+        cards2.forEach((card) => {
+          const parallaxFactor = parseFloat(card.dataset.parallax) || 0.1;
+          const translateY = scrollY * parallaxFactor * 0.5;
+          card.style.transform = `translateY(${translateY}px)`;
+        });
+      }
+    }
+    
+    scrollHandler = handleHeroParallax;
+    window.addEventListener('scroll', handleHeroParallax, { passive: true });
+    handleHeroParallax();
+  }
+  
+  // Run on initial page load
+  document.addEventListener('DOMContentLoaded', initParallax);
+  
+  // Run on Turbo navigation (when navigating back)
+  document.addEventListener('turbo:load', initParallax);
+  
+  // Also run on turbo:render for cached pages
+  document.addEventListener('turbo:render', initParallax);
+})();
+</script>
+
+<!-- Testimonials Section - Fanfix Style Chat Bubbles -->
+<section id="testimonials" class="py-20 bg-white overflow-hidden">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col lg:flex-row lg:items-center gap-12 lg:gap-20">
+      <!-- Left Side - Testimonial Chat Bubbles -->
+      <div class="lg:w-3/5 space-y-6">
+        <!-- Testimonial 1 - Right aligned (like sent message) -->
+        <div class="flex justify-end">
+          <div class="max-w-md">
+            <div class="rounded-3xl rounded-br-lg px-6 py-5 shadow-lg" style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);">
+              <p class="text-white text-lg">Flikk is now my primary source of income.</p>
+            </div>
+            <div class="flex items-center justify-end mt-3 space-x-3">
+              <span class="text-gray-600 font-medium text-sm">Rachel Chaleff</span>
+              <div class="w-10 h-10 rounded-full overflow-hidden border-2 border-white shadow-md">
+                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face" alt="Rachel Chaleff" class="w-full h-full object-cover">
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Testimonial 2 - Left aligned with gradient background -->
+        <div class="flex justify-start">
+          <div class="max-w-lg">
+            <div class="rounded-3xl rounded-bl-lg px-6 py-5 shadow-lg" style="background: linear-gradient(135deg, #FFE4EC 0%, #E8D4F0 50%, #D4E4F8 100%);">
+              <p class="text-gray-800 text-lg">Flikk helped me turn my passion for content creation into a true career. I'm so grateful to be a Flikk creator!</p>
+            </div>
+            <div class="flex items-center mt-3 space-x-3">
+              <div class="w-10 h-10 rounded-full overflow-hidden border-2 border-white shadow-md">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=face" alt="Jaime Gordon" class="w-full h-full object-cover">
+              </div>
+              <span class="text-gray-600 font-medium text-sm">Jaime Gordon</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Testimonial 3 - Left aligned with gradient background -->
+        <div class="flex justify-start">
+          <div class="max-w-md">
+            <div class="rounded-3xl rounded-bl-lg px-6 py-5 shadow-lg" style="background: linear-gradient(135deg, #FFE4EC 0%, #E8D4F0 50%, #D4E4F8 100%);">
+              <p class="text-gray-800 text-lg">It's really helped me take care of my family financially.</p>
+            </div>
+            <div class="flex items-center mt-3 space-x-3">
+              <div class="w-10 h-10 rounded-full overflow-hidden border-2 border-white shadow-md">
+                <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=100&h=100&fit=crop&crop=face" alt="Grace Garcia" class="w-full h-full object-cover">
+              </div>
+              <span class="text-gray-600 font-medium text-sm">Grace Garcia</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Testimonial 4 - Right aligned with gradient background -->
+        <div class="flex justify-end">
+          <div class="max-w-lg">
+            <div class="rounded-3xl rounded-br-lg px-6 py-5 shadow-lg" style="background: linear-gradient(135deg, #FFE4EC 0%, #E8D4F0 50%, #D4E4F8 100%);">
+              <p class="text-gray-800 text-lg">Brand deals go up and down, but Flikk is a very solid source of income.</p>
+            </div>
+            <div class="flex items-center justify-end mt-3 space-x-3">
+              <span class="text-gray-600 font-medium text-sm">Noelle Hear</span>
+              <div class="w-10 h-10 rounded-full overflow-hidden border-2 border-white shadow-md">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face" alt="Noelle Hear" class="w-full h-full object-cover">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Right Side - Heading -->
+      <div class="lg:w-2/5">
+        <h2 class="font-display text-5xl md:text-6xl lg:text-7xl text-black leading-[0.95]">
+          TRUSTED BY<br>THOUSANDS OF<br>CREATORS
+        </h2>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Video Lightbox Section -->
+<section class="py-12 bg-white">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Video Container with Gradient Border -->
+    <a href="#" id="video-lightbox-trigger" class="block relative group cursor-pointer">
+      <!-- Gradient Border Container -->
+      <div class="relative p-1.5 rounded-3xl overflow-hidden" style="background: linear-gradient(135deg, #FF9FCD 0%, #FFB6D9 25%, #D4E4F8 50%, #FFD93D 75%, #FF9FCD 100%);">
+        <!-- Video Thumbnail -->
+        <div class="relative rounded-2xl overflow-hidden bg-gradient-to-br from-pink-100 via-purple-100 to-blue-100">
+          <div class="aspect-video relative">
+            <!-- Placeholder gradient background matching Fanfix -->
+            <div class="absolute inset-0" style="background: linear-gradient(135deg, #E8D4F0 0%, #D4E4F8 50%, #FFE4EC 100%);"></div>
+            
+            <!-- Center Creator Image/Video Preview -->
+            <div class="absolute inset-0 flex items-center justify-center">
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&h=500&fit=crop&crop=face" alt="Hear from Flikk Creators" class="w-full h-full object-cover opacity-90">
+            </div>
+            
+            <!-- Overlay Text -->
+            <div class="absolute inset-0 flex items-end justify-center pb-16">
+              <div class="text-center">
+                <span class="font-display text-2xl md:text-4xl lg:text-5xl text-black tracking-wide">HEAR FROM </span>
+                <span class="font-display text-2xl md:text-4xl lg:text-5xl tracking-wide logo-gradient">FLIKK</span>
+                <span class="font-display text-2xl md:text-4xl lg:text-5xl text-black tracking-wide"> CREATORS</span>
+              </div>
+            </div>
+            
+            <!-- Play Button -->
+            <div class="absolute inset-0 flex items-center justify-center">
+              <div class="w-16 h-16 md:w-20 md:h-20 rounded-full bg-white/90 backdrop-blur-sm shadow-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                <svg class="w-6 h-6 md:w-8 md:h-8 text-gray-800 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </a>
+    
+    <!-- Mobile Device Preview (shown on right in Fanfix) -->
+    <div class="hidden lg:block absolute right-0 bottom-0 translate-x-1/4 translate-y-1/4 transform">
+      <div class="w-48 h-80 bg-black rounded-3xl p-2 shadow-2xl">
+        <div class="w-full h-full bg-gradient-to-br from-pink-200 via-purple-200 to-blue-200 rounded-2xl overflow-hidden">
+          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=400&fit=crop" alt="" class="w-full h-full object-cover">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Stats Section -->
+<section class="py-20 bg-[#f9f9f9]">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid lg:grid-cols-2 gap-12 items-center">
+      <div class="text-center lg:text-left">
+        <div class="font-display text-6xl md:text-7xl lg:text-8xl text-black mb-4">OVER ₹100CR</div>
+        <h2 class="font-display text-3xl md:text-4xl text-black mb-6">PAID OUT TO CREATORS</h2>
+        <p class="text-gray-700 text-lg leading-relaxed mb-4">
+          Join the Flikk community of over 15 million users to unlock a new stream of recurring income. 
+          We will help you every step of the way, providing marketing coaching, special opportunities, and all the data you need to grow your following and increase your earnings.
+        </p>
+        <p class="text-gray-700 text-lg leading-relaxed mb-4">
+          Becoming a Flikk creator also gets you access to exclusive parties, events, concerts, and other IRL experiences that are only for the Flikk community.
+        </p>
+        <p class="text-gray-700 text-lg leading-relaxed">
+          We also have brand partnership opportunities exclusively for Flikk creators.
+        </p>
+      </div>
+      <div class="grid grid-cols-2 gap-6">
+        <div class="bg-white rounded-2xl p-6 text-center shadow-lg">
+          <div class="font-display text-4xl md:text-5xl text-black">80%</div>
+          <div class="text-gray-600 mt-2">Earnings You Keep</div>
+        </div>
+        <div class="bg-white rounded-2xl p-6 text-center shadow-lg">
+          <div class="font-display text-4xl md:text-5xl text-black">24HRS</div>
+          <div class="text-gray-600 mt-2">Fast Payouts</div>
+        </div>
+        <div class="bg-white rounded-2xl p-6 text-center shadow-lg">
+          <div class="font-display text-4xl md:text-5xl text-black">10K+</div>
+          <div class="text-gray-600 mt-2">Active Creators</div>
+        </div>
+        <div class="bg-white rounded-2xl p-6 text-center shadow-lg">
+          <div class="font-display text-4xl md:text-5xl text-black">15M+</div>
+          <div class="text-gray-600 mt-2">Happy Fans</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-20 bg-gradient-to-b from-white to-pink-50">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <h2 class="font-display text-4xl md:text-5xl lg:text-6xl text-black mb-8">READY TO GET PAID?</h2>
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
+      <%= link_to creator_registration_path, class: "btn-primary px-10 py-4 text-lg font-semibold flex items-center space-x-3" do %>
+        <span>Apply & Start Earning Today*</span>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+        </svg>
+      <% end %>
+    </div>
+    <p class="text-sm text-gray-500">*Must be 18+ and agree to age/identity verification</p>
+  </div>
+</section>
+
+<!-- FAQ Section -->
+<section id="faq" class="py-20 bg-white">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h2 class="font-display text-4xl md:text-5xl text-center text-black mb-12">FAQ</h2>
+    <div class="space-y-0">
+      <details class="faq-item group">
+        <summary class="flex items-center justify-between py-6 cursor-pointer">
+          <span class="font-medium text-lg">How many followers do I need to become a Flikk Creator?</span>
+          <svg class="w-6 h-6 text-gray-400 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </summary>
+        <div class="pb-6 text-gray-600">You need at least 10,000 followers across all your social media platforms to apply.</div>
+      </details>
+      <details class="faq-item group">
+        <summary class="flex items-center justify-between py-6 cursor-pointer">
+          <span class="font-medium text-lg">How much can I earn?</span>
+          <svg class="w-6 h-6 text-gray-400 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </summary>
+        <div class="pb-6 text-gray-600">How much you earn is completely up to you! You can set your own subscription & Tip-to-DM prices and you keep 80% of everything earned. Flikk keeps 20% to cover operations and maintain the platform.</div>
+      </details>
+      <details class="faq-item group">
+        <summary class="flex items-center justify-between py-6 cursor-pointer">
+          <span class="font-medium text-lg">How old do I have to be to use Flikk?</span>
+          <svg class="w-6 h-6 text-gray-400 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </summary>
+        <div class="pb-6 text-gray-600">You must be at least 18 to use Flikk.</div>
+      </details>
+      <details class="faq-item group">
+        <summary class="flex items-center justify-between py-6 cursor-pointer">
+          <span class="font-medium text-lg">Is explicit content allowed?</span>
+          <svg class="w-6 h-6 text-gray-400 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </summary>
+        <div class="pb-6 text-gray-600">No. Nudity is not allowed.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- Footer with Category Marquee -->
+<footer class="relative overflow-hidden bg-gradient-to-b from-white via-pink-50 to-purple-50 pt-12">
+  <div class="marquee-container py-8">
+    <div class="marquee-content">
+      <span class="category-large-text mx-8">GAMING</span>
+      <span class="category-large-text mx-8">DANCE</span>
+      <span class="category-large-text mx-8">BEAUTY</span>
+      <span class="category-large-text mx-8">FITNESS</span>
+      <span class="category-large-text mx-8">COMEDY</span>
+      <span class="category-large-text mx-8">MUSIC</span>
+      <span class="category-large-text mx-8">GAMING</span>
+      <span class="category-large-text mx-8">DANCE</span>
+      <span class="category-large-text mx-8">BEAUTY</span>
+      <span class="category-large-text mx-8">FITNESS</span>
+      <span class="category-large-text mx-8">COMEDY</span>
+      <span class="category-large-text mx-8">MUSIC</span>
+    </div>
+  </div>
+  <div class="marquee-container py-4">
+    <div class="marquee-content-reverse">
+      <span class="category-large-text mx-8">MOTIVATION</span>
+      <span class="category-large-text mx-8">LIFESTYLE</span>
+      <span class="category-large-text mx-8">FOOD</span>
+      <span class="category-large-text mx-8">TRAVEL</span>
+      <span class="category-large-text mx-8">FINANCE</span>
+      <span class="category-large-text mx-8">TECH</span>
+      <span class="category-large-text mx-8">MOTIVATION</span>
+      <span class="category-large-text mx-8">LIFESTYLE</span>
+      <span class="category-large-text mx-8">FOOD</span>
+      <span class="category-large-text mx-8">TRAVEL</span>
+      <span class="category-large-text mx-8">FINANCE</span>
+      <span class="category-large-text mx-8">TECH</span>
+    </div>
+  </div>
+  <div class="flex justify-center py-8">
+    <div class="w-64 h-80 md:w-80 md:h-96 bg-black rounded-t-full overflow-hidden grid grid-cols-2 gap-1 p-2">
+      <div class="rounded-tl-full overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=300&fit=crop&crop=face" alt="" class="w-full h-full object-cover">
+      </div>
+      <div class="rounded-tr-full overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=300&fit=crop&crop=face" alt="" class="w-full h-full object-cover">
+      </div>
+      <div class="overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=200&h=300&fit=crop&crop=face" alt="" class="w-full h-full object-cover">
+      </div>
+      <div class="overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&h=300&fit=crop&crop=face" alt="" class="w-full h-full object-cover">
+      </div>
+      <div class="overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=300&fit=crop&crop=face" alt="" class="w-full h-full object-cover">
+      </div>
+      <div class="overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=300&fit=crop&crop=face" alt="" class="w-full h-full object-cover">
+      </div>
+    </div>
+  </div>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="flex flex-wrap justify-center gap-6 text-sm font-medium text-black">
+      <a href="mailto:hello@flikk.co.in" class="hover:opacity-70">EMAIL US</a>
+      <a href="#" class="hover:opacity-70">PRESS</a>
+      <a href="#faq" class="hover:opacity-70">FAQ</a>
+      <a href="#" class="hover:opacity-70">INSTAGRAM</a>
+      <a href="#" class="hover:opacity-70">LINKEDIN</a>
+      <a href="#" class="hover:opacity-70">PRIVACY POLICY</a>
+      <a href="#" class="hover:opacity-70">GENERAL TERMS OF SERVICE</a>
+      <a href="#" class="hover:opacity-70">CONTENT GUIDELINES</a>
+    </div>
+    <div class="text-center mt-8 text-sm text-gray-500">© 2024 Flikk. Made with ❤️ in India.</div>
+  </div>
+</footer>
+
+<style>
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+</style>

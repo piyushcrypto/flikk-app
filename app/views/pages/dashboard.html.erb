@@ -1,0 +1,152 @@
+<!-- Flash Message -->
+<% if flash[:notice] %>
+  <div class="fixed top-20 left-1/2 -translate-x-1/2 z-[100] w-full max-w-md px-4">
+    <div class="flash-notice"><%= flash[:notice] %></div>
+  </div>
+<% end %>
+
+<!-- Navigation -->
+<nav class="fixed top-0 left-0 right-0 z-50 bg-[#f9f9f9]/90 backdrop-blur-md">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16 md:h-20">
+      <!-- Logo Left -->
+      <%= link_to root_path, class: "flex items-center" do %>
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-pink-400 to-purple-400 flex items-center justify-center shadow-lg">
+          <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+          </svg>
+        </div>
+      <% end %>
+      
+      <!-- Center Logo -->
+      <%= link_to root_path, class: "absolute left-1/2 -translate-x-1/2" do %>
+        <span class="font-display text-3xl md:text-4xl logo-gradient font-bold tracking-wider">FLIKK</span>
+      <% end %>
+      
+      <!-- Right - User Info -->
+      <div class="flex items-center space-x-4">
+        <div class="text-right hidden sm:block">
+          <div class="text-sm font-semibold text-gray-900"><%= current_user.name %></div>
+          <div class="text-xs text-gray-500"><%= current_user.role.titleize %></div>
+        </div>
+        <div class="w-10 h-10 rounded-full bg-gradient-to-br <%= current_user.creator? ? 'from-pink-400 to-purple-400' : 'from-blue-400 to-cyan-400' %> flex items-center justify-center text-white font-bold">
+          <%= current_user.name.first.upcase %>
+        </div>
+        <%= button_to "Log out", destroy_user_session_path, method: :delete, class: "btn-secondary px-5 py-2 text-sm font-medium" %>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<main class="pt-28 pb-16 min-h-screen">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Welcome Card -->
+    <div class="bg-white rounded-3xl shadow-lg p-8 mb-8 text-center">
+      <div class="w-20 h-20 rounded-full bg-gradient-to-br <%= current_user.creator? ? 'from-pink-400 to-purple-400' : 'from-blue-400 to-cyan-400' %> flex items-center justify-center text-white text-3xl font-bold mx-auto mb-6">
+        <%= current_user.name.first.upcase %>
+      </div>
+      
+      <h1 class="font-display text-3xl md:text-4xl text-black mb-4">
+        WELCOME, <%= current_user.name.upcase %>!
+      </h1>
+      
+      <div class="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-gray-100 mb-6">
+        <% if current_user.creator? %>
+          <span>🎨</span>
+          <span class="text-gray-700">You are logged in as a <span class="text-pink-500 font-semibold">Creator</span></span>
+        <% elsif current_user.admin? %>
+          <span>👑</span>
+          <span class="text-gray-700">You are logged in as an <span class="text-yellow-500 font-semibold">Admin</span></span>
+        <% else %>
+          <span>🎉</span>
+          <span class="text-gray-700">You are logged in as a <span class="text-blue-500 font-semibold">Fan</span></span>
+        <% end %>
+      </div>
+      
+      <% if current_user.creator? %>
+        <p class="text-gray-600 max-w-xl mx-auto">
+          Congratulations! You are now a Flikk Creator. Your dashboard will be available soon where you can post content and track your earnings.
+        </p>
+      <% else %>
+        <p class="text-gray-600 max-w-xl mx-auto">
+          Welcome to Flikk! You can now connect with your favorite creators and access exclusive content.
+        </p>
+      <% end %>
+    </div>
+    
+    <!-- Feature Cards -->
+    <div class="grid md:grid-cols-2 gap-6 mb-8">
+      <% if current_user.creator? %>
+        <div class="bg-white rounded-2xl shadow p-6">
+          <div class="text-3xl mb-4">🚀</div>
+          <h3 class="font-semibold text-lg mb-2">Dashboard Coming Soon</h3>
+          <p class="text-gray-600">Content upload, earnings analytics, and fan engagement tools are on the way!</p>
+        </div>
+        
+        <div class="bg-white rounded-2xl shadow p-6">
+          <div class="text-3xl mb-4">💬</div>
+          <h3 class="font-semibold text-lg mb-2">Messaging Coming Soon</h3>
+          <p class="text-gray-600">Connect directly with your fans and earn from paid DMs!</p>
+        </div>
+      <% else %>
+        <div class="bg-white rounded-2xl shadow p-6">
+          <div class="text-3xl mb-4">🔍</div>
+          <h3 class="font-semibold text-lg mb-2">Discover Creators</h3>
+          <p class="text-gray-600">Browse and discover your favorite creators on Flikk. Coming soon!</p>
+        </div>
+        
+        <div class="bg-white rounded-2xl shadow p-6">
+          <div class="text-3xl mb-4">💬</div>
+          <h3 class="font-semibold text-lg mb-2">Direct Messaging</h3>
+          <p class="text-gray-600">Send messages directly to creators you follow. Coming soon!</p>
+        </div>
+      <% end %>
+    </div>
+    
+    <!-- Account Status -->
+    <div class="bg-white rounded-2xl shadow p-6">
+      <h3 class="font-semibold text-lg mb-4">Account Status</h3>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <% if current_user.creator? %>
+          <div class="text-center p-4 bg-gray-50 rounded-xl">
+            <div class="font-display text-2xl text-black">0</div>
+            <div class="text-sm text-gray-500">Posts</div>
+          </div>
+          <div class="text-center p-4 bg-gray-50 rounded-xl">
+            <div class="font-display text-2xl text-black">0</div>
+            <div class="text-sm text-gray-500">Subscribers</div>
+          </div>
+          <div class="text-center p-4 bg-gray-50 rounded-xl">
+            <div class="font-display text-2xl text-black">₹0</div>
+            <div class="text-sm text-gray-500">Earnings</div>
+          </div>
+        <% else %>
+          <div class="text-center p-4 bg-gray-50 rounded-xl">
+            <div class="font-display text-2xl text-black">0</div>
+            <div class="text-sm text-gray-500">Following</div>
+          </div>
+          <div class="text-center p-4 bg-gray-50 rounded-xl">
+            <div class="font-display text-2xl text-black">0</div>
+            <div class="text-sm text-gray-500">Subscriptions</div>
+          </div>
+          <div class="text-center p-4 bg-gray-50 rounded-xl">
+            <div class="font-display text-2xl text-black">0</div>
+            <div class="text-sm text-gray-500">Messages</div>
+          </div>
+        <% end %>
+        <div class="text-center p-4 bg-gray-50 rounded-xl">
+          <div class="font-display text-2xl text-green-500">✓</div>
+          <div class="text-sm text-gray-500">Email Verified</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Footer -->
+<footer class="bg-white border-t py-6">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <p class="text-sm text-gray-500">© 2024 Flikk (flikk.co.in). Made with ❤️ in India.</p>
+  </div>
+</footer>
