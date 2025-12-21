@@ -1,21 +1,21 @@
 <!-- Fixed Navigation -->
-<nav class="fixed top-0 left-0 right-0 z-50 bg-[#f9f9f9]/90 backdrop-blur-md">
+<nav class="fixed top-0 left-0 right-0 z-50" id="main-nav">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex items-center justify-between h-16 md:h-20">
-      <!-- Logo Left - kk Icon -->
-      <div class="flex items-center">
+      <!-- Logo Left - kk Icon (hides on scroll) -->
+      <div class="flex items-center nav-hide-on-scroll transition-opacity duration-300">
         <a href="/" class="flex items-center">
           <%= render 'shared/logo_icon', size: 'md' %>
         </a>
       </div>
       
-      <!-- Center Logo - Hidden on very small screens -->
-      <a href="/" class="absolute left-1/2 -translate-x-1/2 hidden sm:block">
+      <!-- Center Logo - Always visible -->
+      <a href="/" class="absolute left-1/2 -translate-x-1/2">
         <%= render 'shared/logo_text', size: 'lg' %>
       </a>
       
-      <!-- Right - Auth Buttons - Both visible on mobile -->
-      <div class="flex items-center space-x-2 sm:space-x-4">
+      <!-- Right - Auth Buttons (hides on scroll) -->
+      <div class="flex items-center space-x-2 sm:space-x-4 nav-hide-on-scroll transition-opacity duration-300">
         <%= link_to "Log in", new_user_session_path, class: "text-black font-medium hover:opacity-70 transition-opacity text-sm sm:text-base" %>
         <%= link_to fan_registration_path, class: "btn-secondary px-3 py-2 sm:px-5 sm:py-2.5 text-xs sm:text-sm font-semibold flex items-center space-x-1 sm:space-x-2" do %>
           <span>Sign up</span>
@@ -27,6 +27,39 @@
     </div>
   </div>
 </nav>
+
+<!-- Navbar scroll behavior script -->
+<script>
+(function() {
+  let lastScrollY = 0;
+  const navHideElements = document.querySelectorAll('.nav-hide-on-scroll');
+  
+  function handleNavScroll() {
+    const currentScrollY = window.scrollY;
+    
+    if (currentScrollY > 100) {
+      // Hide other nav items when scrolled down
+      navHideElements.forEach(el => {
+        el.style.opacity = '0';
+        el.style.pointerEvents = 'none';
+      });
+    } else {
+      // Show nav items when at top
+      navHideElements.forEach(el => {
+        el.style.opacity = '1';
+        el.style.pointerEvents = 'auto';
+      });
+    }
+    
+    lastScrollY = currentScrollY;
+  }
+  
+  window.addEventListener('scroll', handleNavScroll, { passive: true });
+  document.addEventListener('turbo:load', () => {
+    handleNavScroll();
+  });
+})();
+</script>
 
 <!-- Hero Section -->
 <section class="relative min-h-screen overflow-hidden bg-[#f9f9f9]" id="hero-section">
@@ -807,9 +840,9 @@
 <!-- FAQ Section - Fanfix Card Style -->
 <section id="faq" class="py-12 md:py-20 bg-[#f9f9f9]">
   <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-    <!-- Gradient flikk watermark -->
+    <!-- FAQ Heading in gradient style -->
     <div class="text-center mb-6 md:mb-8">
-      <span class="logo-text text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-transparent bg-clip-text bg-gradient-to-r from-pink-300 via-purple-300 to-cyan-300 opacity-50">flik<span class="mirror-k">k</span></span>
+      <h2 class="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-transparent bg-clip-text bg-gradient-to-r from-pink-300 via-purple-300 to-cyan-300 opacity-50">FAQ</h2>
     </div>
     
     <div class="space-y-4">
