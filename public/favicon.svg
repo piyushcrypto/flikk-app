@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f9a8d4"/> <!-- pink-300 -->
+      <stop offset="50%" style="stop-color:#f472b6"/> <!-- pink-400 -->
+      <stop offset="100%" style="stop-color:#c084fc"/> <!-- purple-400 -->
+    </linearGradient>
+  </defs>
+  <rect width="32" height="32" rx="8" fill="url(#bgGradient)"/>
+  <g fill="#ffffff" font-family="DM Sans, system-ui, -apple-system, sans-serif" font-weight="900" font-size="16" text-anchor="middle">
+    <text x="12" y="22">k</text>
+    <text x="20" y="22" transform="translate(40, 0) scale(-1, 1)">k</text>
+  </g>
+</svg>
