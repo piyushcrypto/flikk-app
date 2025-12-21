@@ -1,0 +1,82 @@
+<div class="bg-white rounded-xl border border-gray-100 shadow-sm mb-6 overflow-hidden">
+  <!-- Post Header -->
+  <div class="flex items-center justify-between p-4">
+    <div class="flex items-center space-x-3">
+      <div class="relative">
+        <img src="<%= post[:creator][:avatar] %>" alt="<%= post[:creator][:name] %>" class="w-10 h-10 rounded-full object-cover border border-gray-200">
+        <% if post[:creator][:live] %>
+          <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
+        <% end %>
+      </div>
+      <div>
+        <h4 class="font-bold text-sm text-black"><%= post[:creator][:name] %></h4>
+        <p class="text-xs text-gray-500"><%= post[:creator][:handle] %> • <%= post[:timestamp] %></p>
+      </div>
+    </div>
+    <button class="text-gray-400 hover:text-gray-600">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Post Content -->
+  <div class="px-4 pb-3">
+    <p class="text-sm text-gray-800 leading-relaxed"><%= post[:content] %></p>
+  </div>
+
+  <!-- Post Media (Locked/Unlocked) -->
+  <div class="relative bg-gray-100 aspect-[4/5] sm:aspect-square md:aspect-[4/3] w-full overflow-hidden">
+    <% if post[:locked] %>
+      <!-- Locked State -->
+      <img src="<%= post[:image] %>" alt="Post content" class="w-full h-full object-cover filter blur-xl scale-110 transition-transform duration-700">
+      
+      <!-- Lock Overlay -->
+      <div class="absolute inset-0 flex flex-col items-center justify-center bg-black/20 backdrop-blur-sm z-10 p-6 text-center">
+        <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center mb-4 shadow-lg">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <h3 class="text-white font-bold text-lg mb-2">Unlock this post</h3>
+        <p class="text-white/80 text-sm mb-6 max-w-xs">Support <%= post[:creator][:name] %> to see this exclusive content.</p>
+        
+        <button class="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition hover:scale-105 flex items-center space-x-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+             <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
+          </svg>
+          <span>Unlock for <%= post[:unlock_price] %> Hearts</span>
+        </button>
+      </div>
+    <% else %>
+      <!-- Unlocked State -->
+      <img src="<%= post[:image] %>" alt="Post content" class="w-full h-full object-cover">
+    <% end %>
+  </div>
+
+  <!-- Post Actions -->
+  <div class="p-4 flex items-center justify-between border-t border-gray-50">
+    <div class="flex items-center space-x-6">
+      <button class="flex items-center space-x-2 text-gray-600 hover:text-pink-500 transition-colors group">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 group-hover:fill-pink-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+        </svg>
+        <span class="font-medium text-sm"><%= post[:likes] %></span>
+      </button>
+      
+      <button class="flex items-center space-x-2 text-gray-600 hover:text-blue-500 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+        </svg>
+        <span class="font-medium text-sm"><%= post[:comments] %></span>
+      </button>
+    </div>
+    
+    <button class="text-gray-400 hover:text-gray-600">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+      </svg>
+    </button>
+  </div>
+</div>
+
