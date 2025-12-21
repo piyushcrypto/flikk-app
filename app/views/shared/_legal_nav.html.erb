@@ -1,0 +1,26 @@
+<!-- Navigation for Legal Pages -->
+<nav class="fixed top-0 left-0 right-0 z-50 bg-[#f9f9f9]/90 backdrop-blur-md">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16 md:h-20">
+      <div class="flex items-center">
+        <%= link_to root_path, class: "flex items-center" do %>
+          <%= render 'shared/logo_icon', size: 'md' %>
+        <% end %>
+      </div>
+      <%= link_to root_path, class: "absolute left-1/2 -translate-x-1/2" do %>
+        <%= render 'shared/logo_text', size: 'md' %>
+      <% end %>
+      <div class="flex items-center space-x-2 sm:space-x-4">
+        <% if user_signed_in? %>
+          <%= button_to "Log out", destroy_user_session_path, method: :delete, class: "text-black font-medium hover:opacity-70 transition-opacity text-sm" %>
+        <% else %>
+          <%= link_to "Log in", new_user_session_path, class: "text-black font-medium hover:opacity-70 transition-opacity text-sm" %>
+          <%= link_to fan_registration_path, class: "btn-secondary px-3 py-2 text-xs font-semibold" do %>
+            <span>Sign up</span>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</nav>
+

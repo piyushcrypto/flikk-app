@@ -9,18 +9,14 @@
 <nav class="fixed top-0 left-0 right-0 z-50 bg-[#f9f9f9]/90 backdrop-blur-md">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex items-center justify-between h-16 md:h-20">
-      <!-- Logo Left -->
+      <!-- Logo Left - kk Icon -->
       <%= link_to root_path, class: "flex items-center" do %>
-        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-pink-400 to-purple-400 flex items-center justify-center shadow-lg">
-          <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-          </svg>
-        </div>
+        <%= render 'shared/logo_icon', size: 'md' %>
       <% end %>
       
       <!-- Center Logo -->
       <%= link_to root_path, class: "absolute left-1/2 -translate-x-1/2" do %>
-        <span class="font-display text-3xl md:text-4xl logo-gradient font-bold tracking-wider">FLIKK</span>
+        <%= render 'shared/logo_text', size: 'lg' %>
       <% end %>
       
       <!-- Right - User Info -->
@@ -147,6 +143,10 @@
 <!-- Footer -->
 <footer class="bg-white border-t py-6">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-    <p class="text-sm text-gray-500">© 2024 Flikk (flikk.co.in). Made with ❤️ in India.</p>
+    <div class="flex flex-wrap justify-center gap-4 text-xs text-gray-500">
+      <%= link_to "Privacy Policy", privacy_policy_path, class: "hover:text-black" %>
+      <%= link_to "Terms of Service", terms_of_service_path, class: "hover:text-black" %>
+      <%= link_to "Content Guidelines", content_guidelines_path, class: "hover:text-black" %>
+    </div>
   </div>
 </footer>

@@ -1,0 +1,13 @@
+<%# Text logo: flikk with mirrored last k %>
+<%# Usage: render 'shared/logo_text', size: 'lg' (sm, md, lg, xl) %>
+<% size ||= 'lg' %>
+<% 
+  size_classes = {
+    'xs' => 'text-lg',
+    'sm' => 'text-xl',
+    'md' => 'text-2xl md:text-3xl',
+    'lg' => 'text-3xl md:text-4xl',
+    'xl' => 'text-4xl md:text-5xl'
+  }
+%>
+<span class="logo-text <%= size_classes[size] %> logo-gradient">flik<span class="mirror-k">k</span></span>
