@@ -6,15 +6,13 @@ class Creator::DashboardController < ApplicationController
   def show
     @creator = current_user
     
-    # TODO: Implement these with real data
-    @message_requests = []
-    @dm_requests = []
-    @on_demand_requests = []
-    @tip_requests = []
+    # Get conversations with messages
+    @conversations = current_user.conversations_as_creator.with_messages.ordered.limit(10)
+    @unread_messages_count = current_user.unread_messages_count
     
     # Stats
     @total_earnings = 0
-    @total_messages = 0
+    @total_messages = current_user.conversations_as_creator.joins(:messages).count
     @total_followers = current_user.followers_count || 0
   end
 

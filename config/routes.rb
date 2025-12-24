@@ -42,6 +42,18 @@ Rails.application.routes.draw do
   # Fan Dashboard
   get 'dashboard', to: 'fan/dashboard#show', as: :dashboard
 
+  # Messaging
+  resources :conversations, only: [:index, :show, :create] do
+    member do
+      get :messages
+    end
+    resources :messages, only: [:create] do
+      collection do
+        post :mark_read
+      end
+    end
+  end
+
   # Legal pages
   get 'privacy-policy', to: 'pages#privacy_policy', as: :privacy_policy
   get 'terms-of-service', to: 'pages#terms_of_service', as: :terms_of_service

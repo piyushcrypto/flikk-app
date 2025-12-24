@@ -23,8 +23,9 @@ class Fan::DashboardController < ApplicationController
     # TODO: Implement following system
     @following_creators = []
     
-    # TODO: Implement messaging system
-    @active_chats = []
+    # Messaging
+    @unread_messages_count = current_user.unread_messages_count
+    @active_chats = current_user.conversations.with_messages.limit(5)
   end
 end
 

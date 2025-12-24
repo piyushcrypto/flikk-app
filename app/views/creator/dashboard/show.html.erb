@@ -117,21 +117,63 @@
       </div>
     </div>
 
-    <!-- Tabs -->
-    <div class="flex space-x-4 mb-6 border-b border-gray-800 overflow-x-auto">
-      <button class="px-4 py-3 text-white border-b-2 border-pink-500 font-bold whitespace-nowrap">All Requests</button>
-      <button class="px-4 py-3 text-gray-400 hover:text-white transition-colors whitespace-nowrap">Messages</button>
-      <button class="px-4 py-3 text-gray-400 hover:text-white transition-colors whitespace-nowrap">On Demand</button>
-      <button class="px-4 py-3 text-gray-400 hover:text-white transition-colors whitespace-nowrap">Tips</button>
-    </div>
-
-    <!-- Requests Section -->
-    <div class="space-y-4">
-      <% if @message_requests.empty? && @dm_requests.empty? && @on_demand_requests.empty? && @tip_requests.empty? %>
+    <!-- Messages Section -->
+    <div class="mb-8">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold text-white flex items-center space-x-2">
+          <span>💬</span>
+          <span>Messages</span>
+          <% if @unread_messages_count > 0 %>
+            <span class="px-2 py-0.5 bg-pink-500 text-white text-xs font-bold rounded-full"><%= @unread_messages_count %></span>
+          <% end %>
+        </h2>
+        <%= link_to conversations_path, class: "text-pink-400 hover:text-pink-300 text-sm font-medium" do %>
+          View All →
+        <% end %>
+      </div>
+      
+      <% if @conversations.any? %>
+        <div class="space-y-3">
+          <% @conversations.each do |conversation| %>
+            <% fan = conversation.fan %>
+            <%= link_to conversation_path(conversation), class: "block card-bg rounded-xl p-4 border border-gray-800 hover:border-pink-500/50 transition-colors" do %>
+              <div class="flex items-center space-x-4">
+                <div class="relative flex-shrink-0">
+                  <div class="w-12 h-12 rounded-full overflow-hidden">
+                    <% if fan.avatar.attached? %>
+                      <%= image_tag fan.avatar, class: "w-full h-full object-cover" %>
+                    <% else %>
+                      <div class="w-full h-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center">
+                        <span class="text-white font-bold"><%= fan.name.first.upcase %></span>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+                
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between">
+                    <h3 class="font-bold text-white"><%= fan.name %></h3>
+                    <% if conversation.last_message_at %>
+                      <span class="text-xs text-gray-500"><%= time_ago_in_words(conversation.last_message_at) %></span>
+                    <% end %>
+                  </div>
+                  <p class="text-sm text-gray-400 truncate"><%= conversation.last_message_preview || "No messages yet" %></p>
+                </div>
+                
+                <% if conversation.unread_count_for(current_user) > 0 %>
+                  <span class="px-2 py-1 bg-pink-500 text-white text-xs font-bold rounded-full">
+                    <%= conversation.unread_count_for(current_user) %>
+                  </span>
+                <% end %>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+      <% else %>
         <div class="card-bg rounded-xl p-12 text-center border border-gray-800">
           <div class="text-6xl mb-4">📭</div>
-          <h3 class="text-xl font-bold text-white mb-2">No requests yet</h3>
-          <p class="text-gray-400 mb-6">When fans send you messages or requests, they'll appear here.</p>
+          <h3 class="text-xl font-bold text-white mb-2">No messages yet</h3>
+          <p class="text-gray-400 mb-6">When fans send you messages, they'll appear here.</p>
           
           <% unless @creator.is_live? %>
             <p class="text-sm text-gray-500 mb-4">Tip: Go live to let fans know you're available!</p>

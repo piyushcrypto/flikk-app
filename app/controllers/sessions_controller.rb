@@ -1,18 +1,18 @@
 class SessionsController < Devise::SessionsController
-  # GET /users/sign_in
-  # def new
-  #   super
-  # end
-
   # POST /users/sign_in
-  # def create
-  #   super
-  # end
+  def create
+    super do |resource|
+      # Set encrypted cookie for Action Cable authentication
+      cookies.encrypted[:user_id] = resource.id
+    end
+  end
 
   # DELETE /users/sign_out
-  # def destroy
-  #   super
-  # end
+  def destroy
+    # Clear the Action Cable cookie
+    cookies.delete(:user_id)
+    super
+  end
 
   protected
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_12_24_214225) do
+ActiveRecord::Schema[7.1].define(version: 2025_12_24_230616) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -53,6 +53,20 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_24_214225) do
     t.index ["user_id"], name: "index_availability_slots_on_user_id"
   end
 
+  create_table "conversations", force: :cascade do |t|
+    t.bigint "fan_id", null: false
+    t.bigint "creator_id", null: false
+    t.datetime "last_message_at"
+    t.integer "unread_fan_count", default: 0
+    t.integer "unread_creator_count", default: 0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["creator_id"], name: "index_conversations_on_creator_id"
+    t.index ["fan_id", "creator_id"], name: "index_conversations_on_fan_id_and_creator_id", unique: true
+    t.index ["fan_id"], name: "index_conversations_on_fan_id"
+    t.index ["last_message_at"], name: "index_conversations_on_last_message_at"
+  end
+
   create_table "creator_services", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "service_type"
@@ -63,6 +77,20 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_24_214225) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_creator_services_on_user_id"
+  end
+
+  create_table "messages", force: :cascade do |t|
+    t.bigint "conversation_id", null: false
+    t.bigint "sender_id", null: false
+    t.text "content", null: false
+    t.datetime "read_at"
+    t.integer "message_type", default: 0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["conversation_id", "created_at"], name: "index_messages_on_conversation_id_and_created_at"
+    t.index ["conversation_id"], name: "index_messages_on_conversation_id"
+    t.index ["read_at"], name: "index_messages_on_read_at"
+    t.index ["sender_id"], name: "index_messages_on_sender_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -95,5 +123,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_24_214225) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "availability_slots", "users"
+  add_foreign_key "conversations", "users", column: "creator_id"
+  add_foreign_key "conversations", "users", column: "fan_id"
   add_foreign_key "creator_services", "users"
+  add_foreign_key "messages", "conversations"
+  add_foreign_key "messages", "users", column: "sender_id"
 end

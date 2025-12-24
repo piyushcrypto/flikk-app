@@ -15,6 +15,11 @@ class User < ApplicationRecord
   has_many :creator_services, dependent: :destroy
   has_many :availability_slots, dependent: :destroy
 
+  # Messaging associations
+  has_many :conversations_as_fan, class_name: 'Conversation', foreign_key: 'fan_id', dependent: :destroy
+  has_many :conversations_as_creator, class_name: 'Conversation', foreign_key: 'creator_id', dependent: :destroy
+  has_many :sent_messages, class_name: 'Message', foreign_key: 'sender_id', dependent: :destroy
+
   # Scopes for querying creators
   scope :creators, -> { where(role: :creator) }
   scope :verified_creators, -> { creators.where(onboarding_completed: true) }
@@ -118,6 +123,29 @@ class User < ApplicationRecord
       "#{(count / 1_000.0).round(1)}K"
     else
       count.to_s
+    end
+  end
+
+  # Get all conversations for this user
+  def conversations
+    Conversation.for_user(self).ordered
+  end
+
+  # Get total unread message count
+  def unread_messages_count
+    if creator?
+      conversations_as_creator.sum(:unread_creator_count)
+    else
+      conversations_as_fan.sum(:unread_fan_count)
+    end
+  end
+
+  # Get conversation with a specific user
+  def conversation_with(other_user)
+    if creator?
+      conversations_as_creator.find_by(fan_id: other_user.id)
+    else
+      conversations_as_fan.find_by(creator_id: other_user.id)
     end
   end
 
