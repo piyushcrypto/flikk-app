@@ -11,6 +11,21 @@ Rails.application.routes.draw do
     get 'register/creator', to: 'registrations#new_creator', as: :creator_registration
   end
 
+  # Creator Onboarding
+  namespace :creator do
+    get 'onboarding', to: 'onboarding#show', as: :onboarding
+    get 'onboarding/profile', to: 'onboarding#profile', as: :onboarding_profile
+    patch 'onboarding/profile', to: 'onboarding#update_profile'
+    get 'onboarding/services', to: 'onboarding#services', as: :onboarding_services
+    patch 'onboarding/services', to: 'onboarding#update_services'
+    get 'onboarding/availability', to: 'onboarding#availability', as: :onboarding_availability
+    patch 'onboarding/availability', to: 'onboarding#update_availability'
+    post 'onboarding/slots', to: 'onboarding#create_slot', as: :onboarding_slots
+    delete 'onboarding/slots/:id', to: 'onboarding#destroy_slot', as: :onboarding_slot
+    get 'onboarding/complete', to: 'onboarding#complete', as: :onboarding_complete
+    get 'onboarding/check_username', to: 'onboarding#check_username', as: :check_username
+  end
+
   # Application routes
   root 'pages#landing'
   get 'dashboard', to: 'pages#dashboard', as: :dashboard

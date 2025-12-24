@@ -73,3 +73,9 @@ group :test do
 end
 
 gem "dockerfile-rails", ">= 1.7", :group => :development
+
+gem "aws-sdk-s3", "~> 1.209"
+
+gem "dotenv-rails", "~> 3.2", :groups => [:development, :test]
+
+gem "image_processing", "~> 1.14"

@@ -1,0 +1,247 @@
+<%# Creator Onboarding - Step 3: Availability & Pricing %>
+<div class="min-h-screen bg-[#0a0a0a] py-8 px-4">
+  <div class="max-w-4xl mx-auto">
+    
+    <!-- Logo -->
+    <div class="text-center mb-8">
+      <%= link_to root_path, class: "inline-flex items-center space-x-2" do %>
+        <%= render 'shared/logo_icon', size: 'md' %>
+        <span class="logo-text text-2xl bg-gradient-to-r from-pink-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">flik<span class="mirror-k" style="background: inherit; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">k</span></span>
+      <% end %>
+    </div>
+    
+    <!-- Progress -->
+    <%= render 'creator/onboarding/progress' %>
+    
+    <!-- Main Form -->
+    <%= form_with url: creator_onboarding_availability_path, method: :patch, local: true, id: "availability-form" do %>
+      
+      <div class="grid md:grid-cols-2 gap-6">
+        
+        <!-- Left: Availability Slots -->
+        <div class="bg-[#1a1a1a] rounded-2xl border border-gray-800 p-6">
+          <h2 class="text-xl font-bold text-white mb-2">Availability Slots</h2>
+          <p class="text-gray-400 text-sm mb-6">Set when you're available for booked sessions</p>
+          
+          <!-- Day Selector -->
+          <div class="flex flex-wrap gap-2 mb-6">
+            <% User::DAYS_OF_WEEK.each_with_index do |day, index| %>
+              <button type="button" 
+                      class="day-btn px-3 py-2 rounded-lg text-xs font-medium border transition-colors
+                             <%= @slots_by_day[index].present? ? 'border-green-500 bg-green-500/20 text-green-400' : 'border-gray-700 bg-[#0a0a0a] text-gray-400 hover:border-gray-600' %>"
+                      data-day="<%= index %>">
+                <%= day[0..2] %>
+                <% if @slots_by_day[index].present? %>
+                  <span class="ml-1 text-[10px]">(<%= @slots_by_day[index].count %>)</span>
+                <% end %>
+              </button>
+            <% end %>
+          </div>
+          
+          <!-- Slot Creator -->
+          <div id="slot-creator" class="hidden mb-6 p-4 bg-[#0a0a0a] rounded-xl border border-gray-700">
+            <h3 id="selected-day-label" class="text-sm font-medium text-white mb-4">Monday</h3>
+            <div class="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <label class="block text-xs text-gray-500 mb-1">From</label>
+                <input type="time" id="slot-start" class="w-full bg-[#1a1a1a] border border-gray-700 rounded-lg py-2 px-3 text-white text-sm focus:outline-none focus:border-pink-500">
+              </div>
+              <div>
+                <label class="block text-xs text-gray-500 mb-1">To</label>
+                <input type="time" id="slot-end" class="w-full bg-[#1a1a1a] border border-gray-700 rounded-lg py-2 px-3 text-white text-sm focus:outline-none focus:border-pink-500">
+              </div>
+            </div>
+            <button type="button" id="add-slot-btn" class="w-full py-2 bg-green-500 text-white text-sm font-bold rounded-lg hover:bg-green-600 transition-colors">
+              + Add Slot
+            </button>
+          </div>
+          
+          <!-- Existing Slots Display -->
+          <div id="slots-display" class="space-y-2 max-h-64 overflow-y-auto">
+            <% User::DAYS_OF_WEEK.each_with_index do |day, day_index| %>
+              <% if @slots_by_day[day_index].present? %>
+                <div class="day-slots" data-day="<%= day_index %>">
+                  <h4 class="text-xs font-medium text-gray-400 mb-2"><%= day %></h4>
+                  <% @slots_by_day[day_index].each do |slot| %>
+                    <div class="flex items-center justify-between p-2 bg-[#0a0a0a] rounded-lg mb-1 slot-item" data-slot-id="<%= slot.id %>">
+                      <span class="text-sm text-white"><%= slot.time_range %></span>
+                      <button type="button" class="delete-slot-btn text-red-400 hover:text-red-300" data-slot-id="<%= slot.id %>">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                      </button>
+                    </div>
+                  <% end %>
+                </div>
+              <% end %>
+            <% end %>
+            
+            <% if @slots_by_day.values.flatten.empty? %>
+              <p class="text-gray-500 text-sm text-center py-4">No slots added yet. Click a day to add slots.</p>
+            <% end %>
+          </div>
+        </div>
+        
+        <!-- Right: Pricing -->
+        <div class="bg-[#1a1a1a] rounded-2xl border border-gray-800 p-6">
+          <h2 class="text-xl font-bold text-white mb-2">Set Your Pricing</h2>
+          <p class="text-gray-400 text-sm mb-6">Configure pricing for each service you offer</p>
+          
+          <div class="space-y-4">
+            <% @services.each do |service| %>
+              <div class="p-4 bg-[#0a0a0a] rounded-xl border border-gray-700">
+                <div class="flex items-center space-x-3 mb-4">
+                  <span class="text-2xl"><%= service.icon %></span>
+                  <h3 class="font-bold text-white"><%= service.label %></h3>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                  <!-- Price per 30-min slot -->
+                  <div>
+                    <label class="block text-xs text-gray-500 mb-1">Per 30-min Slot</label>
+                    <div class="relative">
+                      <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">₹</span>
+                      <input type="number" 
+                             name="service_pricing[<%= service.id %>][price_per_slot]"
+                             value="<%= service.price_per_slot&.to_i %>"
+                             min="0"
+                             step="50"
+                             placeholder="500"
+                             class="w-full bg-[#1a1a1a] border border-gray-700 rounded-lg py-2 pl-7 pr-3 text-white text-sm focus:outline-none focus:border-pink-500">
+                    </div>
+                  </div>
+                  
+                  <!-- Price per message -->
+                  <div>
+                    <label class="block text-xs text-gray-500 mb-1">Per Message</label>
+                    <div class="relative">
+                      <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">₹</span>
+                      <input type="number" 
+                             name="service_pricing[<%= service.id %>][price_per_message]"
+                             value="<%= service.price_per_message&.to_i %>"
+                             min="0"
+                             step="10"
+                             placeholder="50"
+                             class="w-full bg-[#1a1a1a] border border-gray-700 rounded-lg py-2 pl-7 pr-3 text-white text-sm focus:outline-none focus:border-pink-500">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+          
+          <% if @services.empty? %>
+            <p class="text-gray-500 text-center py-8">No services selected. <a href="<%= creator_onboarding_services_path %>" class="text-pink-500 hover:underline">Go back</a> to select services.</p>
+          <% end %>
+          
+          <div class="mt-6 p-4 bg-purple-500/10 border border-purple-500/30 rounded-xl">
+            <h4 class="text-sm font-bold text-purple-400 mb-2">💡 Pro Tip</h4>
+            <p class="text-xs text-gray-400">You can set both slot pricing (for scheduled sessions) and per-message pricing (for on-demand DMs). Leave empty if you don't want to offer that pricing model.</p>
+          </div>
+        </div>
+        
+      </div>
+      
+      <% if flash[:alert] %>
+        <p class="text-red-400 text-sm text-center mt-4"><%= flash[:alert] %></p>
+      <% end %>
+      
+      <!-- Navigation -->
+      <div class="flex items-center justify-between mt-8">
+        <%= link_to "← Back", creator_onboarding_services_path, class: "text-gray-400 hover:text-white transition-colors" %>
+        <%= submit_tag "Complete Setup →", class: "py-3 px-8 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold rounded-xl hover:opacity-90 transition-opacity cursor-pointer" %>
+      </div>
+    <% end %>
+    
+  </div>
+</div>
+
+<script>
+document.addEventListener('turbo:load', () => {
+  const dayBtns = document.querySelectorAll('.day-btn');
+  const slotCreator = document.getElementById('slot-creator');
+  const selectedDayLabel = document.getElementById('selected-day-label');
+  const addSlotBtn = document.getElementById('add-slot-btn');
+  const slotStart = document.getElementById('slot-start');
+  const slotEnd = document.getElementById('slot-end');
+  
+  const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  let selectedDay = null;
+  
+  dayBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      selectedDay = parseInt(btn.dataset.day);
+      selectedDayLabel.textContent = days[selectedDay];
+      slotCreator.classList.remove('hidden');
+      
+      // Highlight selected day
+      dayBtns.forEach(b => b.classList.remove('ring-2', 'ring-pink-500'));
+      btn.classList.add('ring-2', 'ring-pink-500');
+    });
+  });
+  
+  if (addSlotBtn) {
+    addSlotBtn.addEventListener('click', async () => {
+      if (selectedDay === null || !slotStart.value || !slotEnd.value) {
+        alert('Please select a day and time range');
+        return;
+      }
+      
+      const formData = new FormData();
+      formData.append('availability_slot[day_of_week]', selectedDay);
+      formData.append('availability_slot[start_time]', slotStart.value);
+      formData.append('availability_slot[end_time]', slotEnd.value);
+      formData.append('authenticity_token', document.querySelector('meta[name="csrf-token"]').content);
+      
+      try {
+        const response = await fetch('/creator/onboarding/slots', {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'Accept': 'application/json'
+          }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          // Reload page to show new slot
+          window.location.reload();
+        } else {
+          alert(data.errors.join(', '));
+        }
+      } catch (error) {
+        alert('Error adding slot');
+      }
+    });
+  }
+  
+  // Delete slot handlers
+  document.querySelectorAll('.delete-slot-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      if (!confirm('Remove this slot?')) return;
+      
+      const slotId = btn.dataset.slotId;
+      
+      try {
+        const response = await fetch(`/creator/onboarding/slots/${slotId}`, {
+          method: 'DELETE',
+          headers: {
+            'Accept': 'application/json',
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+          }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          btn.closest('.slot-item').remove();
+        }
+      } catch (error) {
+        alert('Error removing slot');
+      }
+    });
+  });
+});
+</script>
+

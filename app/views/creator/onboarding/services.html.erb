@@ -1,0 +1,75 @@
+<%# Creator Onboarding - Step 2: Services %>
+<div class="min-h-screen bg-[#0a0a0a] py-8 px-4">
+  <div class="max-w-3xl mx-auto">
+    
+    <!-- Logo -->
+    <div class="text-center mb-8">
+      <%= link_to root_path, class: "inline-flex items-center space-x-2" do %>
+        <%= render 'shared/logo_icon', size: 'md' %>
+        <span class="logo-text text-2xl bg-gradient-to-r from-pink-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">flik<span class="mirror-k" style="background: inherit; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">k</span></span>
+      <% end %>
+    </div>
+    
+    <!-- Progress -->
+    <%= render 'creator/onboarding/progress' %>
+    
+    <!-- Card -->
+    <div class="bg-[#1a1a1a] rounded-2xl border border-gray-800 p-8">
+      <div class="text-center mb-8">
+        <h1 class="text-2xl font-bold text-white mb-2">What Services Do You Offer?</h1>
+        <p class="text-gray-400">Select all the services you want to provide to your fans</p>
+      </div>
+      
+      <%= form_with url: creator_onboarding_services_path, method: :patch, local: true do %>
+        
+        <!-- Services Grid -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <% User::SERVICE_TYPES.each do |service| %>
+            <label class="service-card relative cursor-pointer">
+              <input type="checkbox" 
+                     name="services[]" 
+                     value="<%= service[:key] %>"
+                     <%= 'checked' if @selected_services.include?(service[:key]) %>
+                     class="sr-only peer">
+              <div class="h-full p-4 rounded-xl border-2 border-gray-700 bg-[#0a0a0a] 
+                          peer-checked:border-pink-500 peer-checked:bg-pink-500/10
+                          hover:border-gray-600 transition-all">
+                <div class="text-3xl mb-2"><%= service[:icon] %></div>
+                <h3 class="font-bold text-white text-sm mb-1"><%= service[:label] %></h3>
+                <p class="text-xs text-gray-500 leading-tight"><%= service[:description] %></p>
+              </div>
+              <!-- Checkmark -->
+              <div class="absolute top-2 right-2 w-5 h-5 rounded-full bg-pink-500 hidden peer-checked:flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-white" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+              </div>
+            </label>
+          <% end %>
+        </div>
+        
+        <% if flash[:alert] %>
+          <p class="text-red-400 text-sm text-center mb-4"><%= flash[:alert] %></p>
+        <% end %>
+        
+        <!-- Navigation -->
+        <div class="flex items-center justify-between pt-4">
+          <%= link_to "← Back", creator_onboarding_profile_path, class: "text-gray-400 hover:text-white transition-colors" %>
+          <%= submit_tag "Continue →", class: "py-3 px-8 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold rounded-xl hover:opacity-90 transition-opacity cursor-pointer" %>
+        </div>
+      <% end %>
+    </div>
+    
+  </div>
+</div>
+
+<style>
+  .service-card input:checked + div {
+    border-color: rgb(236, 72, 153);
+    background: rgba(236, 72, 153, 0.1);
+  }
+  .service-card input:checked ~ div:last-child {
+    display: flex;
+  }
+</style>
+

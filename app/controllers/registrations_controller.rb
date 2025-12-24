@@ -24,6 +24,12 @@ class RegistrationsController < Devise::RegistrationsController
     # Set role based on the registration path
     resource.role = params[:user][:role] if params[:user][:role].present?
 
+    # Initialize onboarding for creators
+    if resource.creator?
+      resource.onboarding_step = 1
+      resource.onboarding_completed = false
+    end
+
     resource.save
     yield resource if block_given?
     
@@ -56,7 +62,11 @@ class RegistrationsController < Devise::RegistrationsController
   end
 
   def after_sign_up_path_for(resource)
-    dashboard_path
+    if resource.creator?
+      creator_onboarding_path
+    else
+      dashboard_path
+    end
   end
 end
 
