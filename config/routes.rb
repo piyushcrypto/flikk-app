@@ -24,11 +24,23 @@ Rails.application.routes.draw do
     delete 'onboarding/slots/:id', to: 'onboarding#destroy_slot', as: :onboarding_slot
     get 'onboarding/complete', to: 'onboarding#complete', as: :onboarding_complete
     get 'onboarding/check_username', to: 'onboarding#check_username', as: :check_username
+    
+    # Creator Dashboard
+    get 'dashboard', to: 'dashboard#show', as: :dashboard
+    post 'go_live', to: 'dashboard#go_live', as: :go_live
+    post 'go_offline', to: 'dashboard#go_offline', as: :go_offline
+    
+    # Profile management
+    get 'profile', to: 'profile#show', as: :profile
+    get 'profile/edit', to: 'profile#edit', as: :edit_profile
+    patch 'profile', to: 'profile#update'
   end
 
   # Application routes
   root 'pages#landing'
-  get 'dashboard', to: 'pages#dashboard', as: :dashboard
+  
+  # Fan Dashboard
+  get 'dashboard', to: 'fan/dashboard#show', as: :dashboard
 
   # Legal pages
   get 'privacy-policy', to: 'pages#privacy_policy', as: :privacy_policy
@@ -39,4 +51,7 @@ Rails.application.routes.draw do
 
   # Health check
   get 'up' => 'rails/health#show', as: :rails_health_check
+
+  # Public Creator Profile (must be last to catch /:username)
+  get ':username', to: 'profiles#show', as: :public_profile, constraints: { username: /[a-zA-Z0-9_]+/ }
 end

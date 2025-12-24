@@ -15,6 +15,13 @@ class User < ApplicationRecord
   has_many :creator_services, dependent: :destroy
   has_many :availability_slots, dependent: :destroy
 
+  # Scopes for querying creators
+  scope :creators, -> { where(role: :creator) }
+  scope :verified_creators, -> { creators.where(onboarding_completed: true) }
+  scope :live_creators, -> { verified_creators.where(is_live: true) }
+  scope :popular, -> { verified_creators.order(followers_count: :desc) }
+  scope :recently_active, -> { verified_creators.order(updated_at: :desc) }
+
   validates :name, presence: true
   validates :role, presence: true
   validates :username, uniqueness: { case_sensitive: false }, allow_blank: true
@@ -81,6 +88,37 @@ class User < ApplicationRecord
   # Check if creator needs onboarding
   def needs_onboarding?
     creator? && !onboarding_completed?
+  end
+
+  # Go live functionality
+  def go_live!
+    update(is_live: true, last_live_at: Time.current)
+  end
+
+  def go_offline!
+    update(is_live: false)
+  end
+
+  # Display handle
+  def display_handle
+    username.present? ? "@#{username}" : "@#{email.split('@').first}"
+  end
+
+  # Instagram URL
+  def instagram_url
+    instagram_handle.present? ? "https://instagram.com/#{instagram_handle}" : nil
+  end
+
+  # Formatted followers count
+  def formatted_followers
+    count = followers_count.to_i
+    if count >= 1_000_000
+      "#{(count / 1_000_000.0).round(1)}M"
+    elsif count >= 1_000
+      "#{(count / 1_000.0).round(1)}K"
+    else
+      count.to_s
+    end
   end
 
   # Get current onboarding step (default to 1 if not set)

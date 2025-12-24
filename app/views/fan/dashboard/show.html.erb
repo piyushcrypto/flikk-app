@@ -1,0 +1,179 @@
+<!-- Fan Dashboard - Creator Discovery -->
+<style>
+  .dashboard-bg { background: #0a0a0a; }
+  .card-bg { background: #1a1a1a; }
+  
+  @keyframes online-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+    50% { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+  }
+  .online-ring { animation: online-pulse 2s infinite; }
+  
+  .creator-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .creator-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  }
+  
+  .scroll-container {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scroll-container::-webkit-scrollbar { display: none; }
+</style>
+
+<!-- Navbar -->
+<nav class="fixed top-0 left-0 right-0 z-50 dashboard-bg border-b border-gray-800 h-16">
+  <div class="max-w-7xl mx-auto px-4 h-full flex items-center justify-between">
+    <div class="flex items-center">
+      <%= link_to dashboard_path, class: "flex items-center space-x-2" do %>
+        <%= render 'shared/logo_icon', size: 'sm' %>
+        <span class="logo-text text-xl sm:text-2xl bg-gradient-to-r from-pink-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">flik<span class="mirror-k" style="background: inherit; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">k</span></span>
+      <% end %>
+    </div>
+
+    <div class="hidden md:flex flex-1 max-w-lg mx-8">
+      <div class="relative w-full">
+        <input type="text" placeholder="Search creators..." class="w-full bg-[#1a1a1a] border border-gray-700 rounded-full py-2.5 pl-11 pr-4 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-pink-500 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500 absolute left-4 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+      </div>
+    </div>
+
+    <div class="flex items-center space-x-4">
+      <button class="bg-[#1a1a1a] hover:bg-[#252525] border border-gray-700 rounded-full px-4 py-2 flex items-center space-x-2 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-pink-500" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
+        </svg>
+        <span class="text-sm font-bold text-white"><%= @heart_balance %></span>
+      </button>
+
+      <div class="relative" id="user-menu-container">
+        <button id="user-menu-btn" class="flex items-center space-x-2 focus:outline-none">
+          <div class="w-9 h-9 rounded-full overflow-hidden border-2 border-gray-700 hover:border-pink-500 transition-colors">
+            <% if current_user.avatar.attached? %>
+              <%= image_tag current_user.avatar, class: "w-full h-full object-cover" %>
+            <% else %>
+              <div class="w-full h-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center">
+                <span class="text-white font-bold text-sm"><%= current_user.name.first.upcase %></span>
+              </div>
+            <% end %>
+          </div>
+        </button>
+        <div id="user-menu-dropdown" class="absolute right-0 mt-2 w-56 card-bg rounded-xl shadow-2xl border border-gray-800 py-2 hidden">
+          <div class="px-4 py-3 border-b border-gray-800">
+            <p class="text-sm font-bold text-white"><%= current_user.name %></p>
+            <p class="text-xs text-gray-500"><%= current_user.email %></p>
+          </div>
+          <div class="border-t border-gray-800 mt-2 pt-2">
+            <%= button_to destroy_user_session_path, method: :delete, class: "block w-full text-left px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 transition-colors" do %>
+              <span class="flex items-center space-x-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+                <span>Log out</span>
+              </span>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<div class="pt-20 pb-8 min-h-screen dashboard-bg text-white">
+  <div class="max-w-7xl mx-auto px-4 space-y-10">
+    
+    <!-- Row 1: Live Creators -->
+    <section>
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center space-x-2">
+          <h2 class="text-xl font-bold">Creators Live Now</h2>
+          <% if @live_creators.any? %>
+            <span class="text-xs text-green-400">(<%= @live_creators.count %> live)</span>
+          <% end %>
+        </div>
+      </div>
+      
+      <% if @live_creators.any? %>
+        <div class="flex space-x-4 overflow-x-auto scroll-container pb-2">
+          <% @live_creators.each do |creator| %>
+            <%= render 'shared/creator_card', creator: creator, show_live: true %>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="card-bg rounded-xl p-8 text-center">
+          <p class="text-gray-400">No creators are live right now. Check back later!</p>
+        </div>
+      <% end %>
+    </section>
+
+    <!-- Row 2: Popular Creators -->
+    <section>
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center space-x-2">
+          <span class="text-2xl">🔥</span>
+          <h2 class="text-xl font-bold">Popular Creators</h2>
+        </div>
+      </div>
+      
+      <% if @popular_creators.any? %>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          <% @popular_creators.each do |creator| %>
+            <%= render 'shared/creator_card_compact', creator: creator %>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="card-bg rounded-xl p-8 text-center">
+          <p class="text-gray-400">No creators found. Be the first to join!</p>
+        </div>
+      <% end %>
+    </section>
+
+    <!-- Row 3: Suggested Creators -->
+    <section>
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center space-x-2">
+          <span class="text-2xl">✨</span>
+          <h2 class="text-xl font-bold">Suggested for You</h2>
+        </div>
+      </div>
+      
+      <% if @suggested_creators.any? %>
+        <div class="flex space-x-4 overflow-x-auto scroll-container pb-2">
+          <% @suggested_creators.each do |creator| %>
+            <%= render 'shared/creator_card', creator: creator, show_live: false %>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="card-bg rounded-xl p-8 text-center">
+          <p class="text-gray-400">No suggestions available right now.</p>
+        </div>
+      <% end %>
+    </section>
+
+  </div>
+</div>
+
+<script>
+document.addEventListener('turbo:load', () => {
+  const userMenuBtn = document.getElementById('user-menu-btn');
+  const userMenuDropdown = document.getElementById('user-menu-dropdown');
+  
+  if (userMenuBtn && userMenuDropdown) {
+    userMenuBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      userMenuDropdown.classList.toggle('hidden');
+    });
+    
+    document.addEventListener('click', (e) => {
+      if (!userMenuDropdown.contains(e.target) && !userMenuBtn.contains(e.target)) {
+        userMenuDropdown.classList.add('hidden');
+      }
+    });
+  }
+});
+</script>
+

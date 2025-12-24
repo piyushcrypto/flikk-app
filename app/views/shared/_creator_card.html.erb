@@ -1,0 +1,110 @@
+<%# Creator Card - Full Size %>
+<%# Usage: render 'shared/creator_card', creator: @creator, show_live: true %>
+<% show_live ||= false %>
+
+<%= link_to public_profile_path(creator.username), class: "flex-shrink-0 w-64 creator-card card-bg rounded-xl overflow-hidden border border-gray-800 block" do %>
+  <!-- Cover Image -->
+  <div class="relative h-32">
+    <% if creator.cover_image.attached? %>
+      <%= image_tag creator.cover_image, class: "w-full h-full object-cover" %>
+    <% else %>
+      <div class="w-full h-full bg-gradient-to-br from-pink-500/30 to-purple-600/30"></div>
+    <% end %>
+    <div class="absolute inset-0 bg-gradient-to-t from-[#1a1a1a] to-transparent"></div>
+    
+    <% if show_live && creator.is_live? %>
+      <div class="absolute top-3 left-3 flex items-center space-x-1.5 bg-red-500 px-2 py-1 rounded-full">
+        <div class="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+        <span class="text-[10px] font-bold text-white uppercase">Live</span>
+      </div>
+    <% end %>
+    
+    <% if creator.category.present? %>
+      <div class="absolute top-3 right-3 bg-black/50 backdrop-blur-sm px-2 py-1 rounded-full">
+        <span class="text-[10px] font-medium text-white"><%= creator.category %></span>
+      </div>
+    <% end %>
+  </div>
+  
+  <!-- Content -->
+  <div class="p-4 -mt-10">
+    <div class="flex items-end space-x-3">
+      <!-- Avatar -->
+      <div class="relative">
+        <div class="w-16 h-16 rounded-full overflow-hidden border-3 border-[#1a1a1a] <%= creator.is_live? ? 'online-ring' : '' %>">
+          <% if creator.avatar.attached? %>
+            <%= image_tag creator.avatar, class: "w-full h-full object-cover" %>
+          <% else %>
+            <div class="w-full h-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center">
+              <span class="text-white font-bold text-lg"><%= creator.name.first.upcase %></span>
+            </div>
+          <% end %>
+        </div>
+        <% if creator.is_live? %>
+          <div class="absolute bottom-0 right-0 w-4 h-4 bg-green-500 border-2 border-[#1a1a1a] rounded-full"></div>
+        <% end %>
+      </div>
+      
+      <!-- Info -->
+      <div class="flex-1 min-w-0">
+        <h3 class="font-bold text-white truncate"><%= creator.name %></h3>
+        <p class="text-sm text-gray-400 truncate"><%= creator.display_handle %></p>
+      </div>
+    </div>
+    
+    <div class="mt-3 flex items-center justify-between">
+      <span class="text-sm text-gray-400"><%= creator.formatted_followers %> followers</span>
+      
+      <% if creator.instagram_handle.present? %>
+        <button onclick="event.preventDefault(); openInstagram('<%= creator.instagram_url %>')" 
+                class="text-pink-400 hover:text-pink-300 transition-colors flex items-center space-x-1 text-sm">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          <span>Instagram</span>
+        </button>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
+<!-- Instagram Modal (Desktop) / New Tab (Mobile) -->
+<div id="instagram-modal" class="fixed inset-0 z-50 hidden" aria-modal="true">
+  <div class="fixed inset-0 bg-black/80 backdrop-blur-sm" onclick="closeInstagramModal()"></div>
+  <div class="fixed inset-4 md:inset-10 lg:inset-20 bg-white rounded-2xl overflow-hidden flex flex-col">
+    <div class="p-4 border-b flex items-center justify-between">
+      <span class="font-bold text-gray-900">Instagram Profile</span>
+      <button onclick="closeInstagramModal()" class="text-gray-500 hover:text-gray-700">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <iframe id="instagram-iframe" class="flex-1 w-full" src="" frameborder="0"></iframe>
+  </div>
+</div>
+
+<script>
+function openInstagram(url) {
+  if (!url) return;
+  
+  // Check if mobile
+  if (window.innerWidth < 768) {
+    window.open(url, '_blank');
+  } else {
+    // Desktop - show modal
+    const modal = document.getElementById('instagram-modal');
+    const iframe = document.getElementById('instagram-iframe');
+    if (modal && iframe) {
+      iframe.src = url;
+      modal.classList.remove('hidden');
+    }
+  }
+}
+
+function closeInstagramModal() {
+  const modal = document.getElementById('instagram-modal');
+  const iframe = document.getElementById('instagram-iframe');
+  if (modal && iframe) {
+    modal.classList.add('hidden');
+    iframe.src = '';
+  }
+}
+</script>
+

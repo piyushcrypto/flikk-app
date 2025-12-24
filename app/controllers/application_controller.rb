@@ -7,6 +7,8 @@ class ApplicationController < ActionController::Base
   def after_sign_in_path_for(resource)
     if resource.needs_onboarding?
       creator_onboarding_path
+    elsif resource.creator?
+      creator_dashboard_path
     else
       dashboard_path
     end

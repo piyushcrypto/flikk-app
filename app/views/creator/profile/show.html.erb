@@ -1,0 +1,127 @@
+<!-- Creator Profile Management -->
+<style>
+  .dashboard-bg { background: #0a0a0a; }
+  .card-bg { background: #1a1a1a; }
+</style>
+
+<div class="min-h-screen dashboard-bg py-8 px-4">
+  <div class="max-w-4xl mx-auto">
+    
+    <!-- Back Button -->
+    <%= link_to creator_dashboard_path, class: "inline-flex items-center space-x-2 text-gray-400 hover:text-white transition-colors mb-6" do %>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+      </svg>
+      <span>Back to Dashboard</span>
+    <% end %>
+
+    <!-- Profile Card -->
+    <div class="card-bg rounded-2xl overflow-hidden border border-gray-800">
+      <!-- Cover Image -->
+      <div class="relative h-48 md:h-64">
+        <% if @creator.cover_image.attached? %>
+          <%= image_tag @creator.cover_image, class: "w-full h-full object-cover" %>
+        <% else %>
+          <div class="w-full h-full bg-gradient-to-br from-pink-500/30 to-purple-600/30"></div>
+        <% end %>
+        <div class="absolute inset-0 bg-gradient-to-t from-[#1a1a1a] to-transparent"></div>
+      </div>
+
+      <!-- Profile Info -->
+      <div class="px-6 pb-6 -mt-16 relative">
+        <div class="flex flex-col md:flex-row md:items-end md:space-x-6">
+          <!-- Avatar -->
+          <div class="relative">
+            <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-[#1a1a1a] shadow-xl">
+              <% if @creator.avatar.attached? %>
+                <%= image_tag @creator.avatar, class: "w-full h-full object-cover" %>
+              <% else %>
+                <div class="w-full h-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center">
+                  <span class="text-white font-bold text-4xl"><%= @creator.name.first.upcase %></span>
+                </div>
+              <% end %>
+            </div>
+            <% if @creator.is_live? %>
+              <div class="absolute bottom-2 right-2 w-6 h-6 bg-green-500 border-4 border-[#1a1a1a] rounded-full"></div>
+            <% end %>
+          </div>
+
+          <!-- Info -->
+          <div class="flex-1 mt-4 md:mt-0">
+            <h1 class="text-2xl font-bold text-white"><%= @creator.name %></h1>
+            <p class="text-gray-400"><%= @creator.display_handle %></p>
+            <% if @creator.category.present? %>
+              <span class="inline-block mt-2 px-3 py-1 bg-pink-500/20 text-pink-400 rounded-full text-sm"><%= @creator.category %></span>
+            <% end %>
+          </div>
+
+          <!-- Edit Button -->
+          <%= link_to creator_edit_profile_path, class: "mt-4 md:mt-0 inline-flex items-center space-x-2 px-4 py-2 bg-[#252525] hover:bg-[#333] text-white rounded-full transition-colors" do %>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            <span>Edit Profile</span>
+          <% end %>
+        </div>
+
+        <!-- Bio -->
+        <% if @creator.bio.present? %>
+          <p class="mt-6 text-gray-300"><%= @creator.bio %></p>
+        <% end %>
+
+        <!-- Stats -->
+        <div class="mt-6 flex items-center space-x-6">
+          <div>
+            <span class="text-xl font-bold text-white"><%= @creator.formatted_followers %></span>
+            <span class="text-gray-400 text-sm ml-1">followers</span>
+          </div>
+          <% if @creator.instagram_handle.present? %>
+            <a href="<%= @creator.instagram_url %>" target="_blank" class="flex items-center space-x-2 text-pink-400 hover:text-pink-300 transition-colors">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+              <span><%= @creator.instagram_handle %></span>
+            </a>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Services Section -->
+    <div class="mt-8">
+      <h2 class="text-xl font-bold text-white mb-4">Your Services</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <% @creator.creator_services.active.each do |service| %>
+          <div class="card-bg rounded-xl p-4 border border-gray-800 flex items-center justify-between">
+            <div>
+              <p class="font-bold text-white"><%= service.service_type.titleize %></p>
+              <p class="text-sm text-gray-400">
+                <% if service.price_per_message.to_f > 0 %>
+                  ₹<%= service.price_per_message %> per message
+                <% elsif service.price_per_slot.to_f > 0 %>
+                  ₹<%= service.price_per_slot %> per 30-min slot
+                <% else %>
+                  Price not set
+                <% end %>
+              </p>
+            </div>
+            <span class="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-xs">Active</span>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Public Profile Link -->
+    <div class="mt-8 p-4 card-bg rounded-xl border border-gray-800">
+      <p class="text-sm text-gray-400 mb-2">Your public profile URL:</p>
+      <div class="flex items-center space-x-2">
+        <code class="flex-1 bg-[#0a0a0a] px-4 py-2 rounded-lg text-pink-400 text-sm overflow-x-auto">
+          <%= request.base_url %>/<%= @creator.username %>
+        </code>
+        <button onclick="navigator.clipboard.writeText('<%= request.base_url %>/<%= @creator.username %>')" class="px-4 py-2 bg-pink-500 hover:bg-pink-600 text-white rounded-lg transition-colors text-sm">
+          Copy
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
