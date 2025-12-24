@@ -72,6 +72,8 @@ Rails.application.configure do
       expires_in: 1.hour,
       race_condition_ttl: 10.seconds
     }
+  else
+    config.cache_store = :memory_store, { size: 64.megabytes }
   end
 
   # Use a real queuing backend for Active Job (and separate queues per environment).
