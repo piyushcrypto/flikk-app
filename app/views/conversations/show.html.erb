@@ -183,13 +183,17 @@
 </div>
 
 <script>
-document.addEventListener('turbo:load', () => {
+function initMessageChat() {
   const messagesContainer = document.getElementById('messages-container');
   const messageForm = document.getElementById('message-form');
   const messageInput = document.getElementById('message-input');
   const sendButton = document.getElementById('send-button');
   const chatArea = document.getElementById('chat-area');
   const conversationId = chatArea?.dataset.conversationId;
+
+  // Guard against double initialization
+  if (messageInput?.dataset.initialized === 'true') return;
+  if (messageInput) messageInput.dataset.initialized = 'true';
 
   // Scroll to bottom
   function scrollToBottom() {
@@ -201,13 +205,20 @@ document.addEventListener('turbo:load', () => {
 
   // Enable/disable send button based on input
   if (messageInput && sendButton) {
-    messageInput.addEventListener('input', () => {
+    // Direct function to update button state
+    function updateButtonState() {
       sendButton.disabled = messageInput.value.trim() === '';
       
       // Auto-resize textarea
       messageInput.style.height = 'auto';
       messageInput.style.height = Math.min(messageInput.scrollHeight, 120) + 'px';
-    });
+    }
+
+    // Add multiple event listeners for better compatibility
+    messageInput.addEventListener('input', updateButtonState);
+    messageInput.addEventListener('keyup', updateButtonState);
+    messageInput.addEventListener('change', updateButtonState);
+    messageInput.addEventListener('paste', () => setTimeout(updateButtonState, 0));
 
     // Handle Enter key (submit) and Shift+Enter (new line)
     messageInput.addEventListener('keydown', (e) => {
@@ -218,6 +229,9 @@ document.addEventListener('turbo:load', () => {
         }
       }
     });
+
+    // Initial check in case there's already text
+    updateButtonState();
   }
 
   // Handle form submission
@@ -347,6 +361,16 @@ document.addEventListener('turbo:load', () => {
     const date = new Date(isoString);
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   }
-});
+}
+
+// Initialize on multiple events for maximum compatibility
+document.addEventListener('DOMContentLoaded', initMessageChat);
+document.addEventListener('turbo:load', initMessageChat);
+document.addEventListener('turbo:render', initMessageChat);
+
+// Also try to initialize immediately if DOM is already ready
+if (document.readyState !== 'loading') {
+  initMessageChat();
+}
 </script>
 
