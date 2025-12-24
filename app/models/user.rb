@@ -131,13 +131,9 @@ class User < ApplicationRecord
     Conversation.for_user(self).ordered
   end
 
-  # Get total unread message count
+  # Get total unread message count - use Conversation class method for efficiency
   def unread_messages_count
-    if creator?
-      conversations_as_creator.sum(:unread_creator_count)
-    else
-      conversations_as_fan.sum(:unread_fan_count)
-    end
+    Conversation.total_unread_for_user(self)
   end
 
   # Get conversation with a specific user

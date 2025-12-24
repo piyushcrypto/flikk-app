@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_12_24_230616) do
+ActiveRecord::Schema[7.1].define(version: 2025_12_24_234608) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -61,8 +61,10 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_24_230616) do
     t.integer "unread_creator_count", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["creator_id", "last_message_at"], name: "index_conversations_creator_last_msg", order: { last_message_at: :desc }
     t.index ["creator_id"], name: "index_conversations_on_creator_id"
     t.index ["fan_id", "creator_id"], name: "index_conversations_on_fan_id_and_creator_id", unique: true
+    t.index ["fan_id", "last_message_at"], name: "index_conversations_fan_last_msg", order: { last_message_at: :desc }
     t.index ["fan_id"], name: "index_conversations_on_fan_id"
     t.index ["last_message_at"], name: "index_conversations_on_last_message_at"
   end
@@ -88,6 +90,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_24_230616) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["conversation_id", "created_at"], name: "index_messages_on_conversation_id_and_created_at"
+    t.index ["conversation_id", "sender_id", "read_at"], name: "index_messages_on_conv_sender_read"
     t.index ["conversation_id"], name: "index_messages_on_conversation_id"
     t.index ["read_at"], name: "index_messages_on_read_at"
     t.index ["sender_id"], name: "index_messages_on_sender_id"
@@ -116,6 +119,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_24_230616) do
     t.integer "followers_count"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["role", "followers_count"], name: "index_users_on_role_and_followers", order: { followers_count: :desc }
+    t.index ["role", "is_live"], name: "index_users_on_role_and_live_status"
+    t.index ["role", "onboarding_completed"], name: "index_users_on_role_and_onboarding"
     t.index ["role"], name: "index_users_on_role"
     t.index ["username"], name: "index_users_on_username", unique: true
   end

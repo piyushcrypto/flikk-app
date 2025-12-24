@@ -4,7 +4,13 @@ class ConversationsController < ApplicationController
 
   # GET /conversations
   def index
-    @conversations = current_user.conversations.with_messages.includes(:fan, :creator, :messages)
+    # Optimized query with eager loading to avoid N+1
+    @conversations = current_user.conversations
+      .with_messages
+      .with_participants
+      .ordered
+      .includes(messages: :sender)
+      .limit(50)  # Pagination limit for performance
     
     respond_to do |format|
       format.html
@@ -15,15 +21,28 @@ class ConversationsController < ApplicationController
   # GET /conversations/:id
   def show
     @conversation.mark_as_read_for!(current_user)
-    @messages = @conversation.messages.ordered.includes(:sender)
+    
+    # Paginated messages with eager loading
+    @messages = @conversation.messages
+      .ordered
+      .includes(:sender)
+      .limit(100)  # Initial load limit
+      
     @other_user = @conversation.other_participant(current_user)
+    
+    # Preload avatar for other user to avoid N+1 in serializer
+    ActiveStorage::Attachment.where(
+      record_type: 'User',
+      record_id: @other_user.id,
+      name: 'avatar'
+    ).includes(:blob).load
     
     respond_to do |format|
       format.html
       format.json { 
         render json: {
           conversation: conversation_json(@conversation),
-          messages: @messages.map { |m| MessageSerializer.new(m).as_json },
+          messages: @messages.map { |m| message_json(m) },
           other_user: user_json(@other_user)
         }
       }
@@ -33,10 +52,21 @@ class ConversationsController < ApplicationController
   # POST /conversations
   def create
     # Find or create conversation with a creator
-    creator = User.verified_creators.find(params[:creator_id])
+    creator = User.verified_creators.find_by(id: params[:creator_id])
+    
+    unless creator
+      respond_to do |format|
+        format.html { redirect_to dashboard_path, alert: "Creator not found" }
+        format.json { render json: { error: "Creator not found" }, status: :not_found }
+      end
+      return
+    end
     
     if current_user.creator?
-      render json: { error: "Creators cannot initiate conversations" }, status: :unprocessable_entity
+      respond_to do |format|
+        format.html { redirect_to dashboard_path, alert: "Creators cannot initiate conversations" }
+        format.json { render json: { error: "Creators cannot initiate conversations" }, status: :unprocessable_entity }
+      end
       return
     end
 
@@ -50,23 +80,29 @@ class ConversationsController < ApplicationController
 
   # GET /conversations/:id/messages (for pagination/loading more)
   def messages
-    @messages = @conversation.messages.ordered
+    @messages = @conversation.messages.ordered.includes(:sender)
     
     if params[:before].present?
-      @messages = @messages.where('created_at < ?', Time.parse(params[:before]))
+      before_time = Time.zone.parse(params[:before]) rescue nil
+      @messages = @messages.where('created_at < ?', before_time) if before_time
     end
     
-    @messages = @messages.limit(50)
+    if params[:after].present?
+      after_time = Time.zone.parse(params[:after]) rescue nil
+      @messages = @messages.where('created_at > ?', after_time) if after_time
+    end
     
-    render json: @messages.map { |m| MessageSerializer.new(m).as_json }
+    @messages = @messages.limit(params.fetch(:limit, 50).to_i.clamp(1, 100))
+    
+    render json: @messages.map { |m| message_json(m) }
   end
 
   private
 
   def set_conversation
-    @conversation = Conversation.find(params[:id])
+    @conversation = Conversation.find_by(id: params[:id])
     
-    unless @conversation.participant?(current_user)
+    unless @conversation&.participant?(current_user)
       respond_to do |format|
         format.html { redirect_to conversations_path, alert: "You don't have access to this conversation" }
         format.json { render json: { error: "Unauthorized" }, status: :unauthorized }
@@ -89,6 +125,21 @@ class ConversationsController < ApplicationController
     }
   end
 
+  def message_json(message)
+    {
+      id: message.id,
+      conversation_id: message.conversation_id,
+      sender_id: message.sender_id,
+      sender_name: message.sender.name,
+      sender_avatar: message.sender.avatar.attached? ? url_for(message.sender.avatar) : nil,
+      content: message.content,
+      message_type: message.message_type,
+      read_at: message.read_at&.iso8601,
+      created_at: message.created_at.iso8601,
+      is_read: message.read?
+    }
+  end
+
   def user_json(user)
     {
       id: user.id,
@@ -101,4 +152,3 @@ class ConversationsController < ApplicationController
     }
   end
 end
-

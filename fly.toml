@@ -12,18 +12,31 @@ console_command = '/rails/bin/rails console'
 [deploy]
   release_command = './bin/rails db:prepare'
 
+[env]
+  # Puma configuration for high concurrency
+  RAILS_MAX_THREADS = "5"
+  WEB_CONCURRENCY = "2"
+  # Database pool size (should be > RAILS_MAX_THREADS * WEB_CONCURRENCY)
+  DATABASE_POOL_SIZE = "20"
+
 [http_service]
   internal_port = 3000
   force_https = true
   auto_stop_machines = 'stop'
   auto_start_machines = true
-  min_machines_running = 0
+  min_machines_running = 1  # Keep at least 1 machine running for faster cold starts
   processes = ['app']
+  
+  # Concurrency settings for high traffic
+  [http_service.concurrency]
+    type = "connections"
+    soft_limit = 200
+    hard_limit = 250
 
   [[http_service.checks]]
     interval = '10s'
     timeout = '2s'
-    grace_period = '5s'
+    grace_period = '10s'  # Give more time for app startup
     method = 'GET'
     path = '/up'
     protocol = 'http'
@@ -31,6 +44,19 @@ console_command = '/rails/bin/rails console'
 
     [http_service.checks.headers]
       X-Forwarded-Proto = 'https'
+
+# WebSocket support for Action Cable
+[[services]]
+  protocol = "tcp"
+  internal_port = 3000
+
+  [[services.ports]]
+    port = 443
+    handlers = ["tls", "http"]
+
+  [[services.ports]]
+    port = 80
+    handlers = ["http"]
 
 [[vm]]
   memory = '1gb'
