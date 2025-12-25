@@ -22,11 +22,12 @@ class ConversationsController < ApplicationController
   def show
     @conversation.mark_as_read_for!(current_user)
     
-    # Paginated messages with eager loading
+    # Paginated messages with eager loading - get latest 100, then reverse for chronological display
     @messages = @conversation.messages
-      .ordered
+      .order(created_at: :desc)
       .includes(:sender)
-      .limit(100)  # Initial load limit
+      .limit(100)
+      .reverse  # Reverse to show oldest first in the UI
       
     @other_user = @conversation.other_participant(current_user)
     
