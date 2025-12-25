@@ -81,6 +81,46 @@ class ConversationChannel < ApplicationCable::Channel
     logger.error "Error broadcasting typing status: #{e.message}"
   end
 
+  # React to a message via WebSocket
+  def react(data)
+    return unless @conversation&.participant?(current_user)
+
+    message_id = data['message_id']
+    emoji = data['emoji']
+
+    return unless message_id.present? && emoji.present?
+    return unless MessageReaction::ALLOWED_EMOJIS.include?(emoji)
+
+    message = @conversation.messages.find_by(id: message_id)
+    return unless message
+
+    # Toggle reaction (add if not exists, remove if exists)
+    reaction = message.reactions.find_by(user: current_user, emoji: emoji)
+
+    if reaction
+      reaction.destroy
+      action = 'removed'
+    else
+      reaction = message.reactions.create(user: current_user, emoji: emoji)
+      action = reaction.persisted? ? 'added' : nil
+    end
+
+    if action
+      transmit({
+        type: 'reaction_confirmed',
+        message_id: message_id,
+        emoji: emoji,
+        action: action,
+        reaction_counts: message.reaction_counts
+      })
+    end
+
+    logger.info "User #{current_user.id} #{action} reaction #{emoji} on message #{message_id}"
+  rescue => e
+    logger.error "Error processing reaction: #{e.message}"
+    transmit({ type: 'error', message: 'Failed to process reaction' })
+  end
+
   private
 
   def find_conversation(id = nil)

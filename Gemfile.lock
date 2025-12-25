@@ -301,6 +301,12 @@ GEM
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 4.0)
       websocket (~> 1.0)
+    sidekiq (7.3.10)
+      base64
+      connection_pool (>= 2.3.0, < 3)
+      logger
+      rack (>= 2.2.4, < 3.3)
+      redis-client (>= 0.23.0, < 1)
     sprockets (4.2.2)
       concurrent-ruby (~> 1.0)
       logger
@@ -376,6 +382,7 @@ DEPENDENCIES
   rails (~> 7.1.6)
   redis (~> 5.0)
   selenium-webdriver
+  sidekiq (~> 7.0)
   sprockets-rails
   stimulus-rails
   tailwindcss-rails

@@ -35,6 +35,9 @@ gem "redis", "~> 5.0"
 # Connection pooling for Redis
 gem "connection_pool", "~> 2.4"
 
+# Background job processing
+gem "sidekiq", "~> 7.0"
+
 # Rate limiting
 gem "rack-attack"
 

@@ -1,11 +1,22 @@
 class Message < ApplicationRecord
   belongs_to :conversation, touch: true  # Auto-update conversation's updated_at
   belongs_to :sender, class_name: 'User'
+  has_many :reactions, class_name: 'MessageReaction', dependent: :destroy
 
   # Message types: 0 = text, 1 = image, 2 = tip, 3 = request
   enum :message_type, { text: 0, image: 1, tip: 2, request: 3 }, default: :text
 
   validates :content, presence: true, length: { maximum: 2000 }
+
+  # Get reaction counts as a hash { "❤️" => 2, "😂" => 1 }
+  def reaction_counts
+    reactions.group(:emoji).count
+  end
+
+  # Check if a user has reacted with a specific emoji
+  def reacted_by?(user, emoji)
+    reactions.exists?(user: user, emoji: emoji)
+  end
 
   # Use background job for non-critical callbacks to speed up response
   after_create_commit :update_conversation_timestamp
@@ -65,9 +76,8 @@ class Message < ApplicationRecord
   end
 
   def broadcast_message_async
-    # Use inline broadcasting for real-time responsiveness
-    # In a high-scale scenario, this could be moved to Active Job
-    broadcast_message
+    # Use Sidekiq for background broadcasting - keeps message creation fast
+    BroadcastMessageJob.perform_later(id)
   end
 
   def broadcast_message

@@ -32,6 +32,28 @@
     background: #252525;
   }
 
+  .reaction-picker {
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
+  }
+
+  .reaction-pill {
+    cursor: pointer;
+  }
+
+  .reaction-pill.own-reaction {
+    background: rgba(236, 72, 153, 0.3);
+  }
+
+  @keyframes reaction-pop {
+    0% { transform: scale(0); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+  }
+
+  .reaction-added {
+    animation: reaction-pop 0.3s ease-out;
+  }
+
   @keyframes typing-dot {
     0%, 60%, 100% { opacity: 0.3; }
     30% { opacity: 1; }
@@ -305,6 +327,20 @@ function initMessageChat() {
                 }
               }
               break;
+              
+            case 'reaction_update':
+              // Someone added/removed a reaction - update UI
+              if (typeof handleReactionUpdate === 'function') {
+                handleReactionUpdate(data);
+              }
+              break;
+              
+            case 'reaction_confirmed':
+              // Our reaction was confirmed - update counts from server
+              if (typeof updateReactionCounts === 'function') {
+                updateReactionCounts(data.message_id, data.reaction_counts);
+              }
+              break;
           }
         },
 
@@ -490,6 +526,175 @@ document.addEventListener('turbo:render', initMessageChat);
 
 if (document.readyState !== 'loading') {
   initMessageChat();
+}
+
+// Global reaction functions (available to all messages)
+const allowedEmojis = ['❤️', '😂', '😮', '😢', '😡', '👍', '👎', '🔥', '💯', '🙏'];
+
+function toggleReaction(element) {
+  const emoji = element.dataset.emoji;
+  const messageId = element.dataset.messageId;
+  
+  if (!emoji || !messageId) return;
+  if (!allowedEmojis.includes(emoji)) return;
+  
+  const chatArea = document.getElementById('chat-area');
+  const conversationId = chatArea?.dataset.conversationId;
+  
+  // Get subscription from App.cable
+  const subscriptions = App.cable?.subscriptions?.subscriptions || [];
+  const subscription = subscriptions.find(s => 
+    s.identifier && s.identifier.includes(`"conversation_id":${conversationId}`)
+  );
+  
+  if (subscription) {
+    // Send reaction via WebSocket
+    subscription.perform('react', { message_id: parseInt(messageId), emoji: emoji });
+    
+    // Optimistic UI update
+    updateReactionUI(messageId, emoji, element);
+  } else {
+    // Fallback to HTTP
+    toggleReactionHttp(messageId, emoji, element);
+  }
+}
+
+function updateReactionUI(messageId, emoji, clickedElement) {
+  const messageDiv = document.querySelector(`[data-message-id="${messageId}"]`);
+  if (!messageDiv) return;
+  
+  // Check if clicked element is a reaction pill (toggling) or the picker (adding)
+  const isPill = clickedElement.classList.contains('reaction-pill');
+  
+  if (isPill) {
+    // Toggle off - check if we're removing our own reaction
+    if (clickedElement.classList.contains('ring-1')) {
+      clickedElement.classList.remove('ring-1', 'ring-pink-500');
+      const countEl = clickedElement.querySelector('[data-count]');
+      if (countEl) {
+        const newCount = parseInt(countEl.textContent) - 1;
+        if (newCount <= 0) {
+          clickedElement.remove();
+        } else {
+          countEl.textContent = newCount;
+        }
+      }
+    } else {
+      // Adding our reaction to existing emoji
+      clickedElement.classList.add('ring-1', 'ring-pink-500');
+      const countEl = clickedElement.querySelector('[data-count]');
+      if (countEl) {
+        countEl.textContent = parseInt(countEl.textContent) + 1;
+      }
+    }
+  } else {
+    // Adding from picker - find or create reaction bar
+    let reactionsContainer = messageDiv.querySelector('[data-reactions-container]');
+    
+    if (!reactionsContainer) {
+      // Create reactions container
+      const bubbleWrapper = messageDiv.querySelector('.relative');
+      if (!bubbleWrapper) return;
+      
+      reactionsContainer = document.createElement('div');
+      reactionsContainer.className = 'reaction-bar flex flex-wrap gap-1 mt-1';
+      reactionsContainer.dataset.reactionsContainer = '';
+      bubbleWrapper.insertBefore(reactionsContainer, bubbleWrapper.querySelector('.reaction-picker'));
+    }
+    
+    // Check if emoji already exists
+    let pill = reactionsContainer.querySelector(`[data-emoji="${emoji}"]`);
+    
+    if (pill) {
+      // Toggle our reaction
+      if (pill.classList.contains('ring-1')) {
+        pill.classList.remove('ring-1', 'ring-pink-500');
+        const countEl = pill.querySelector('[data-count]');
+        if (countEl) {
+          const newCount = parseInt(countEl.textContent) - 1;
+          if (newCount <= 0) {
+            pill.remove();
+          } else {
+            countEl.textContent = newCount;
+          }
+        }
+      } else {
+        pill.classList.add('ring-1', 'ring-pink-500', 'reaction-added');
+        const countEl = pill.querySelector('[data-count]');
+        if (countEl) {
+          countEl.textContent = parseInt(countEl.textContent) + 1;
+        }
+      }
+    } else {
+      // Create new reaction pill
+      pill = document.createElement('button');
+      pill.className = 'reaction-pill flex items-center gap-0.5 px-2 py-0.5 rounded-full text-xs bg-gray-700/80 hover:bg-gray-600 transition-colors ring-1 ring-pink-500 reaction-added';
+      pill.dataset.emoji = emoji;
+      pill.dataset.messageId = messageId;
+      pill.setAttribute('onclick', 'toggleReaction(this)');
+      pill.innerHTML = `<span>${emoji}</span><span class="text-gray-300" data-count>1</span>`;
+      reactionsContainer.appendChild(pill);
+    }
+  }
+}
+
+async function toggleReactionHttp(messageId, emoji, element) {
+  try {
+    const response = await fetch(`/messages/${messageId}/reactions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({ emoji: emoji })
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      // Update UI based on server response
+      updateReactionCounts(messageId, data.reaction_counts);
+    }
+  } catch (error) {
+    console.error('Error toggling reaction:', error);
+  }
+}
+
+function updateReactionCounts(messageId, reactionCounts) {
+  const messageDiv = document.querySelector(`[data-message-id="${messageId}"]`);
+  if (!messageDiv) return;
+  
+  let reactionsContainer = messageDiv.querySelector('[data-reactions-container]');
+  
+  if (!reactionsContainer && Object.keys(reactionCounts).length > 0) {
+    const bubbleWrapper = messageDiv.querySelector('.relative');
+    if (!bubbleWrapper) return;
+    
+    reactionsContainer = document.createElement('div');
+    reactionsContainer.className = 'reaction-bar flex flex-wrap gap-1 mt-1';
+    reactionsContainer.dataset.reactionsContainer = '';
+    bubbleWrapper.insertBefore(reactionsContainer, bubbleWrapper.querySelector('.reaction-picker'));
+  }
+  
+  if (reactionsContainer) {
+    // Clear and rebuild
+    reactionsContainer.innerHTML = '';
+    
+    for (const [emoji, count] of Object.entries(reactionCounts)) {
+      const pill = document.createElement('button');
+      pill.className = 'reaction-pill flex items-center gap-0.5 px-2 py-0.5 rounded-full text-xs bg-gray-700/80 hover:bg-gray-600 transition-colors';
+      pill.dataset.emoji = emoji;
+      pill.dataset.messageId = messageId;
+      pill.setAttribute('onclick', 'toggleReaction(this)');
+      pill.innerHTML = `<span>${emoji}</span><span class="text-gray-300" data-count>${count}</span>`;
+      reactionsContainer.appendChild(pill);
+    }
+  }
+}
+
+// Handle reaction updates from WebSocket
+function handleReactionUpdate(data) {
+  updateReactionCounts(data.message_id, data.reaction_counts);
 }
 </script>
 

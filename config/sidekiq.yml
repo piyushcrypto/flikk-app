@@ -1,0 +1,10 @@
+# Sidekiq configuration
+:concurrency: 5
+:queues:
+  - default
+  - mailers
+  - notifications
+
+:limits:
+  notifications: 10
+

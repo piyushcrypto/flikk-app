@@ -1,4 +1,11 @@
+require 'sidekiq/web'
+
 Rails.application.routes.draw do
+  # Sidekiq Web UI (protected by admin auth)
+  authenticate :user, ->(user) { user.admin? } do
+    mount Sidekiq::Web => '/sidekiq'
+  end
+
   # Devise routes with custom registrations controller
   devise_for :users, controllers: {
     registrations: 'registrations',
@@ -52,6 +59,11 @@ Rails.application.routes.draw do
         post :mark_read
       end
     end
+  end
+
+  # Message reactions
+  resources :messages, only: [] do
+    resources :reactions, controller: 'message_reactions', only: [:create, :destroy]
   end
 
   # Legal pages

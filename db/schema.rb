@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_12_24_234608) do
+ActiveRecord::Schema[7.1].define(version: 2025_12_25_003102) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -81,6 +81,18 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_24_234608) do
     t.index ["user_id"], name: "index_creator_services_on_user_id"
   end
 
+  create_table "message_reactions", force: :cascade do |t|
+    t.bigint "message_id", null: false
+    t.bigint "user_id", null: false
+    t.string "emoji", limit: 10, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["message_id", "emoji"], name: "index_reactions_on_message_emoji"
+    t.index ["message_id", "user_id", "emoji"], name: "index_reactions_on_message_user_emoji", unique: true
+    t.index ["message_id"], name: "index_message_reactions_on_message_id"
+    t.index ["user_id"], name: "index_message_reactions_on_user_id"
+  end
+
   create_table "messages", force: :cascade do |t|
     t.bigint "conversation_id", null: false
     t.bigint "sender_id", null: false
@@ -132,6 +144,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_24_234608) do
   add_foreign_key "conversations", "users", column: "creator_id"
   add_foreign_key "conversations", "users", column: "fan_id"
   add_foreign_key "creator_services", "users"
+  add_foreign_key "message_reactions", "messages"
+  add_foreign_key "message_reactions", "users"
   add_foreign_key "messages", "conversations"
   add_foreign_key "messages", "users", column: "sender_id"
 end

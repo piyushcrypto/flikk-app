@@ -26,5 +26,8 @@ module FlikkApp
 
     # Autoload serializers
     config.autoload_paths << Rails.root.join("app/serializers")
+    
+    # Use Sidekiq for Active Job
+    config.active_job.queue_adapter = :sidekiq
   end
 end
