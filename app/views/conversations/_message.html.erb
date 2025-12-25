@@ -1,20 +1,10 @@
 <%# Message bubble partial - WhatsApp style %>
 <% is_own = message.from?(current_user) %>
 <% reaction_counts = message.reaction_counts %>
+<%# Users can only react to the OTHER person's messages, not their own %>
+<% can_react = !is_own %>
 
-<div class="message-row flex <%= is_own ? 'justify-end' : 'justify-start' %> items-end gap-1" data-message-id="<%= message.id %>">
-  <%# Reaction button - LEFT side for own messages %>
-  <% if is_own %>
-    <button 
-      class="reaction-trigger flex-shrink-0 w-7 h-7 rounded-full bg-gray-700 hover:bg-gray-600 flex items-center justify-center transition-all hover:scale-110"
-      onclick="openReactionPicker(this, <%= message.id %>)"
-      data-message-id="<%= message.id %>"
-      title="React"
-    >
-      <span class="text-sm">😊</span>
-    </button>
-  <% end %>
-
+<div class="message-row flex <%= is_own ? 'justify-end' : 'justify-start' %> items-end gap-1" data-message-id="<%= message.id %>" data-is-own="<%= is_own %>">
   <%# Avatar for received messages %>
   <% unless is_own %>
     <div class="flex-shrink-0">
@@ -51,22 +41,31 @@
     <% if reaction_counts.any? %>
       <div class="reaction-bar flex flex-wrap gap-1 mt-1 justify-center" data-reactions-container>
         <% reaction_counts.each do |emoji, count| %>
-          <button 
-            class="reaction-pill inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-xs bg-gray-700/80 hover:bg-gray-600 transition-colors <%= message.reacted_by?(current_user, emoji) ? 'ring-1 ring-pink-500 bg-pink-900/30' : '' %>"
-            data-emoji="<%= emoji %>"
-            data-message-id="<%= message.id %>"
-            onclick="toggleReaction(this)"
-          >
-            <span><%= emoji %></span>
-            <span class="text-gray-300" data-count><%= count %></span>
-          </button>
+          <%# Only make pills clickable for messages user can react to %>
+          <% if can_react %>
+            <button 
+              class="reaction-pill inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-xs bg-gray-700/80 hover:bg-gray-600 transition-colors cursor-pointer <%= message.reacted_by?(current_user, emoji) ? 'ring-1 ring-pink-500 bg-pink-900/30' : '' %>"
+              data-emoji="<%= emoji %>"
+              data-message-id="<%= message.id %>"
+              onclick="toggleReaction(this)"
+            >
+              <span><%= emoji %></span>
+              <span class="text-gray-300" data-count><%= count %></span>
+            </button>
+          <% else %>
+            <%# Display-only pill for own messages (can see reactions but not add/remove) %>
+            <span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-xs bg-gray-700/80">
+              <span><%= emoji %></span>
+              <span class="text-gray-300"><%= count %></span>
+            </span>
+          <% end %>
         <% end %>
       </div>
     <% end %>
   </div>
 
-  <%# Reaction button - RIGHT side for received messages %>
-  <% unless is_own %>
+  <%# Reaction button - only show for OTHER person's messages (not your own) %>
+  <% if can_react %>
     <button 
       class="reaction-trigger flex-shrink-0 w-7 h-7 rounded-full bg-gray-700 hover:bg-gray-600 flex items-center justify-center transition-all hover:scale-110"
       onclick="openReactionPicker(this, <%= message.id %>)"
@@ -78,20 +77,22 @@
   <% end %>
 </div>
 
-<%# Floating reaction picker (hidden by default, shown on click) %>
-<div id="reaction-picker-<%= message.id %>" class="reaction-picker-modal hidden fixed z-50" data-message-id="<%= message.id %>">
-  <div class="bg-gray-800 rounded-2xl p-2 shadow-2xl border border-gray-700 max-w-[90vw]">
-    <div class="flex gap-1 overflow-x-auto">
-      <% MessageReaction::ALLOWED_EMOJIS.each do |emoji| %>
-        <button 
-          class="reaction-btn flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-xl sm:text-2xl hover:scale-110 hover:bg-gray-700 rounded-full transition-all"
-          data-emoji="<%= emoji %>"
-          data-message-id="<%= message.id %>"
-          onclick="selectReaction(this, '<%= emoji %>', <%= message.id %>)"
-        >
-          <%= emoji %>
-        </button>
-      <% end %>
+<%# Floating reaction picker (only for messages user can react to) %>
+<% if can_react %>
+  <div id="reaction-picker-<%= message.id %>" class="reaction-picker-modal hidden fixed z-50" data-message-id="<%= message.id %>">
+    <div class="bg-gray-800 rounded-2xl p-2 shadow-2xl border border-gray-700 max-w-[90vw]">
+      <div class="flex gap-1 overflow-x-auto">
+        <% MessageReaction::ALLOWED_EMOJIS.each do |emoji| %>
+          <button 
+            class="reaction-btn flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-xl sm:text-2xl hover:scale-110 hover:bg-gray-700 rounded-full transition-all"
+            data-emoji="<%= emoji %>"
+            data-message-id="<%= message.id %>"
+            onclick="selectReaction(this, '<%= emoji %>', <%= message.id %>)"
+          >
+            <%= emoji %>
+          </button>
+        <% end %>
+      </div>
     </div>
   </div>
-</div>
+<% end %>

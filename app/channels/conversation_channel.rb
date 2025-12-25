@@ -108,6 +108,12 @@ class ConversationChannel < ApplicationCable::Channel
     message = @conversation.messages.find_by(id: message_id)
     return unless message
 
+    # Users can only react to the OTHER person's messages, not their own
+    if message.sender_id == current_user.id
+      transmit({ type: 'error', message: "You can't react to your own messages" })
+      return
+    end
+
     # Toggle reaction (add if not exists, remove if exists)
     reaction = message.reactions.find_by(user: current_user, emoji: emoji)
 

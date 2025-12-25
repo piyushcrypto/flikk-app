@@ -61,6 +61,12 @@ class MessageReactionsController < ApplicationController
     # User must be a participant in the conversation
     unless @message.conversation.participant?(current_user)
       render json: { error: 'Unauthorized' }, status: :unauthorized
+      return
+    end
+    
+    # Users can only react to the OTHER person's messages, not their own
+    if @message.sender_id == current_user.id
+      render json: { error: "You can't react to your own messages" }, status: :forbidden
     end
   end
 end
