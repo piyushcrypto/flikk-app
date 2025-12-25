@@ -187,7 +187,23 @@
     <div class="flex-1 flex flex-col" id="chat-area" data-conversation-id="<%= @conversation.id %>">
       
       <!-- Messages Container -->
-      <div class="flex-1 overflow-y-auto messages-container p-4 space-y-4" id="messages-container">
+      <div class="flex-1 overflow-y-auto messages-container p-4 space-y-4" id="messages-container" 
+           data-has-more="<%= @has_more_messages %>"
+           data-oldest-id="<%= @messages.first&.id %>">
+        
+        <!-- Loading indicator for infinite scroll -->
+        <div id="load-more-indicator" class="<%= @has_more_messages ? '' : 'hidden' %> flex justify-center py-4">
+          <div id="load-more-spinner" class="hidden">
+            <svg class="animate-spin h-6 w-6 text-pink-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+          </div>
+          <button id="load-more-btn" class="text-sm text-gray-400 hover:text-pink-400 transition-colors">
+            ↑ Load earlier messages
+          </button>
+        </div>
+        
         <% @messages.each do |message| %>
           <%= render 'conversations/message', message: message, current_user: current_user %>
         <% end %>
@@ -252,6 +268,113 @@ function initMessageChat() {
     }
   }
   scrollToBottom();
+
+  // Infinite scroll for loading earlier messages
+  let isLoadingMore = false;
+  let hasMoreMessages = messagesContainer?.dataset.hasMore === 'true';
+  const loadMoreIndicator = document.getElementById('load-more-indicator');
+  const loadMoreSpinner = document.getElementById('load-more-spinner');
+  const loadMoreBtn = document.getElementById('load-more-btn');
+
+  async function loadEarlierMessages() {
+    if (isLoadingMore || !hasMoreMessages) return;
+    
+    const oldestMessage = messagesContainer.querySelector('.message-row');
+    const oldestId = oldestMessage?.dataset.messageId;
+    if (!oldestId) return;
+    
+    isLoadingMore = true;
+    if (loadMoreSpinner) loadMoreSpinner.classList.remove('hidden');
+    if (loadMoreBtn) loadMoreBtn.classList.add('hidden');
+    
+    try {
+      const response = await fetch(`/conversations/${conversationId}/messages?before_id=${oldestId}&limit=20`, {
+        headers: { 'Accept': 'application/json' }
+      });
+      
+      if (!response.ok) throw new Error('Failed to load messages');
+      
+      const data = await response.json();
+      hasMoreMessages = data.has_more;
+      
+      if (!hasMoreMessages && loadMoreIndicator) {
+        loadMoreIndicator.classList.add('hidden');
+      }
+      
+      if (data.messages && data.messages.length > 0) {
+        // Save scroll position before prepending
+        const scrollHeightBefore = messagesContainer.scrollHeight;
+        
+        // Prepend messages in chronological order (oldest first)
+        const firstMessageRow = messagesContainer.querySelector('.message-row');
+        
+        data.messages.forEach(message => {
+          const messageHtml = createMessageHtml(message);
+          if (firstMessageRow) {
+            firstMessageRow.insertAdjacentHTML('beforebegin', messageHtml);
+          }
+        });
+        
+        // Restore scroll position
+        const scrollHeightAfter = messagesContainer.scrollHeight;
+        messagesContainer.scrollTop = scrollHeightAfter - scrollHeightBefore;
+        
+        // Update oldest ID in container
+        const newOldest = data.messages[0];
+        if (newOldest) {
+          messagesContainer.dataset.oldestId = newOldest.id;
+        }
+      }
+    } catch (error) {
+      console.error('Error loading earlier messages:', error);
+    } finally {
+      isLoadingMore = false;
+      if (loadMoreSpinner) loadMoreSpinner.classList.add('hidden');
+      if (loadMoreBtn && hasMoreMessages) loadMoreBtn.classList.remove('hidden');
+    }
+  }
+
+  // Create HTML for a message (used when loading earlier messages)
+  function createMessageHtml(message) {
+    const isOwn = message.sender_id === currentUserId;
+    const avatarHtml = !isOwn ? `
+      <div class="flex-shrink-0 mr-2 self-end">
+        <div class="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center">
+          <span class="text-white font-bold text-xs">${escapeHtml(message.sender_name.charAt(0).toUpperCase())}</span>
+        </div>
+      </div>
+    ` : '';
+    
+    return `
+      <div class="message-row flex ${isOwn ? 'justify-end' : 'justify-start'}" data-message-id="${message.id}">
+        ${avatarHtml}
+        <div class="message-wrapper relative max-w-[75%] sm:max-w-[65%]">
+          <div class="message-bubble ${isOwn ? 'sent' : 'received'} rounded-2xl px-4 py-2 text-white relative">
+            ${!isOwn ? `<p class="text-xs text-pink-400 mb-1 font-medium">${escapeHtml(message.sender_name)}</p>` : ''}
+            <p class="text-sm whitespace-pre-wrap break-words">${escapeHtml(message.content)}</p>
+            <div class="flex items-center justify-end gap-1 mt-1">
+              <span class="text-xs opacity-60">${formatTime(message.created_at)}</span>
+              ${isOwn && message.is_read ? '<span class="text-xs text-blue-400">✓✓</span>' : (isOwn ? '<span class="text-xs opacity-50">✓</span>' : '')}
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // Detect scroll to top
+  if (messagesContainer) {
+    messagesContainer.addEventListener('scroll', () => {
+      if (messagesContainer.scrollTop < 100 && hasMoreMessages && !isLoadingMore) {
+        loadEarlierMessages();
+      }
+    });
+  }
+
+  // Load more button click
+  if (loadMoreBtn) {
+    loadMoreBtn.addEventListener('click', loadEarlierMessages);
+  }
 
   // Enable/disable send button based on input
   if (messageInput && sendButton) {

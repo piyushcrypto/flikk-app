@@ -22,12 +22,15 @@ class ConversationsController < ApplicationController
   def show
     @conversation.mark_as_read_for!(current_user)
     
-    # Paginated messages with eager loading - get latest 100, then reverse for chronological display
+    # Paginated messages - get latest 20, then reverse for chronological display
     @messages = @conversation.messages
       .order(created_at: :desc)
-      .includes(:sender)
-      .limit(100)
+      .includes(:sender, :reactions)
+      .limit(20)
       .reverse  # Reverse to show oldest first in the UI
+    
+    # Check if there are more messages to load
+    @has_more_messages = @conversation.messages.count > 20
       
     @other_user = @conversation.other_participant(current_user)
     
@@ -81,21 +84,37 @@ class ConversationsController < ApplicationController
 
   # GET /conversations/:id/messages (for pagination/loading more)
   def messages
-    @messages = @conversation.messages.ordered.includes(:sender)
+    limit = params.fetch(:limit, 20).to_i.clamp(1, 50)
     
-    if params[:before].present?
-      before_time = Time.zone.parse(params[:before]) rescue nil
-      @messages = @messages.where('created_at < ?', before_time) if before_time
+    @messages = @conversation.messages.includes(:sender, :reactions)
+    
+    # For loading older messages (scrolling up)
+    if params[:before_id].present?
+      before_message = @conversation.messages.find_by(id: params[:before_id])
+      if before_message
+        @messages = @messages.where('created_at < ?', before_message.created_at)
+      end
     end
     
-    if params[:after].present?
-      after_time = Time.zone.parse(params[:after]) rescue nil
-      @messages = @messages.where('created_at > ?', after_time) if after_time
+    # For loading newer messages (if needed)
+    if params[:after_id].present?
+      after_message = @conversation.messages.find_by(id: params[:after_id])
+      if after_message
+        @messages = @messages.where('created_at > ?', after_message.created_at)
+      end
     end
     
-    @messages = @messages.limit(params.fetch(:limit, 50).to_i.clamp(1, 100))
+    # Get messages in descending order, then reverse for chronological display
+    @messages = @messages.order(created_at: :desc).limit(limit + 1).to_a
     
-    render json: @messages.map { |m| message_json(m) }
+    # Check if there are more messages
+    has_more = @messages.size > limit
+    @messages = @messages.first(limit).reverse
+    
+    render json: {
+      messages: @messages.map { |m| message_json(m) },
+      has_more: has_more
+    }
   end
 
   private
