@@ -420,6 +420,144 @@
       });
     </script>
     
+    <!-- Notification Permission Banner -->
+    <div id="notification-banner" class="fixed bottom-20 left-1/2 transform -translate-x-1/2 z-[90] max-w-md mx-auto hidden">
+      <div class="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center space-x-4">
+        <div class="flex-shrink-0">
+          <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+          </svg>
+        </div>
+        <div class="flex-1">
+          <p class="font-bold text-sm">Enable Notifications</p>
+          <p class="text-xs opacity-90">Never miss a message from your favorite creators</p>
+        </div>
+        <div class="flex-shrink-0 flex space-x-2">
+          <button onclick="enableNotifications()" class="bg-white text-pink-600 px-4 py-2 rounded-full text-sm font-bold hover:bg-gray-100 transition-colors">
+            Enable
+          </button>
+          <button onclick="dismissNotificationBanner()" class="text-white/70 hover:text-white p-2">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <script>
+      // Show notification permission banner if not granted and not dismissed
+      function checkNotificationPermission() {
+        if (!('Notification' in window)) return;
+        
+        const dismissed = localStorage.getItem('flikk_notification_banner_dismissed');
+        const permission = Notification.permission;
+        
+        if (permission === 'default' && !dismissed) {
+          // Wait a bit before showing to not be too aggressive
+          setTimeout(() => {
+            const banner = document.getElementById('notification-banner');
+            if (banner) banner.classList.remove('hidden');
+          }, 3000);
+        }
+      }
+      
+      function enableNotifications() {
+        if (window.FlikkNotifications) {
+          window.FlikkNotifications.requestPermission().then((granted) => {
+            dismissNotificationBanner();
+            if (granted) {
+              // Play a test sound to confirm it's working
+              window.FlikkNotifications.playNotificationSound();
+            }
+          });
+        }
+      }
+      
+      function dismissNotificationBanner() {
+        localStorage.setItem('flikk_notification_banner_dismissed', 'true');
+        const banner = document.getElementById('notification-banner');
+        if (banner) banner.classList.add('hidden');
+      }
+      
+      // Check on page load
+      document.addEventListener('DOMContentLoaded', checkNotificationPermission);
+      document.addEventListener('turbo:load', checkNotificationPermission);
+    </script>
+    
+    <% if user_signed_in? %>
+    <!-- Global Notification Channel Subscription -->
+    <script>
+      (function() {
+        let notificationSubscription = null;
+        
+        function initGlobalNotifications() {
+          if (notificationSubscription) return; // Already subscribed
+          if (typeof App === 'undefined' || !App.cable) {
+            // Wait for cable to be ready
+            setTimeout(initGlobalNotifications, 100);
+            return;
+          }
+          
+          notificationSubscription = App.cable.subscriptions.create(
+            { channel: "NotificationsChannel" },
+            {
+              connected() {
+                console.log('Connected to global notifications channel');
+              },
+              
+              disconnected() {
+                console.log('Disconnected from global notifications channel');
+                notificationSubscription = null;
+              },
+              
+              received(data) {
+                console.log('Global notification received:', data.type);
+                
+                if (data.type === 'new_message') {
+                  // Show desktop notification if tab is not visible
+                  if (document.hidden && window.FlikkNotifications) {
+                    window.FlikkNotifications.notifyNewMessage(
+                      data.sender_name,
+                      data.preview,
+                      `/conversations/${data.conversation_id}`
+                    );
+                  } else if (window.FlikkNotifications) {
+                    // Tab is visible but still play sound for new messages
+                    window.FlikkNotifications.playNotificationSound();
+                  }
+                  
+                  // Update unread badge in navbar if exists
+                  updateUnreadBadge(data.unread_count);
+                }
+              }
+            }
+          );
+        }
+        
+        function updateUnreadBadge(count) {
+          const badge = document.getElementById('unread-messages-badge');
+          if (badge) {
+            if (count > 0) {
+              badge.textContent = count > 99 ? '99+' : count;
+              badge.classList.remove('hidden');
+            } else {
+              badge.classList.add('hidden');
+            }
+          }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', initGlobalNotifications);
+        document.addEventListener('turbo:load', initGlobalNotifications);
+        
+        if (document.readyState !== 'loading') {
+          initGlobalNotifications();
+        }
+      })();
+    </script>
+    <% end %>
+    
     <%= yield %>
   </body>
 </html>

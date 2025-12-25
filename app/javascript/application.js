@@ -2,6 +2,7 @@
 import "@hotwired/turbo-rails"
 import "controllers"
 import consumer from "channels"
+import "notifications"
 
 // Make consumer available globally for use in inline scripts
 window.App = window.App || {}

@@ -10,3 +10,6 @@ pin "@rails/actioncable", to: "actioncable.esm.js"
 # Pin channels explicitly
 pin "channels", to: "channels/index.js"
 pin "channels/consumer", to: "channels/consumer.js"
+
+# Notifications
+pin "notifications", to: "notifications.js"
