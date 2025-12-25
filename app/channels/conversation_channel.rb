@@ -31,19 +31,33 @@ class ConversationChannel < ApplicationCable::Channel
       return
     end
 
-    # Create the message
-    message = @conversation.messages.create!(
+    # Create the message (skip async broadcast since we'll do it here directly)
+    message = @conversation.messages.new(
       sender: current_user,
       content: content,
       message_type: data['message_type'] || 'text'
     )
+    message.skip_broadcast = true
+    message.save!
+
+    serialized = serialize_message(message)
 
     # Send confirmation back to sender
     transmit({
       type: 'message_sent',
       temp_id: data['temp_id'],
-      message: serialize_message(message)
+      message: serialized
     })
+
+    # Broadcast to all participants in the conversation (including recipient)
+    ActionCable.server.broadcast(
+      "conversation_#{@conversation.id}",
+      {
+        type: 'new_message',
+        message: serialized,
+        conversation_id: @conversation.id
+      }
+    )
 
     logger.info "User #{current_user.id} sent message #{message.id} in conversation #{@conversation.id}"
   rescue ActiveRecord::RecordInvalid => e

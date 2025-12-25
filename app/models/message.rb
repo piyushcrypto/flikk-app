@@ -18,10 +18,13 @@ class Message < ApplicationRecord
     reactions.exists?(user: user, emoji: emoji)
   end
 
+  # Skip broadcast if already handled by channel
+  attr_accessor :skip_broadcast
+
   # Use background job for non-critical callbacks to speed up response
   after_create_commit :update_conversation_timestamp
   after_create_commit :increment_unread_count
-  after_create_commit :broadcast_message_async
+  after_create_commit :broadcast_message_async, unless: :skip_broadcast
 
   scope :ordered, -> { order(created_at: :asc) }
   scope :unread, -> { where(read_at: nil) }
