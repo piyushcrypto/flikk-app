@@ -8,7 +8,7 @@ class Fan::DashboardController < ApplicationController
       return
     end
 
-    @heart_balance = current_user.heart_balance || 0
+    @heart_balance = current_user.respond_to?(:heart_balance) ? (current_user.heart_balance || 0) : 0
     
     # Live creators (creators who have clicked "Go Live")
     @live_creators = User.live_creators
