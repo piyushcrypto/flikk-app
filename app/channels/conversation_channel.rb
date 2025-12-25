@@ -1,21 +1,57 @@
 class ConversationChannel < ApplicationCable::Channel
   def subscribed
-    conversation = find_conversation
-    return reject unless conversation
+    @conversation = find_conversation
+    return reject unless @conversation
     
     # Only allow participants to subscribe
-    unless conversation.participant?(current_user)
+    unless @conversation.participant?(current_user)
       logger.warn "Unauthorized subscription attempt for conversation #{params[:conversation_id]} by user #{current_user.id}"
       return reject
     end
     
-    stream_from "conversation_#{conversation.id}"
-    logger.info "User #{current_user.id} subscribed to conversation #{conversation.id}"
+    stream_from "conversation_#{@conversation.id}"
+    logger.info "User #{current_user.id} subscribed to conversation #{@conversation.id}"
   end
 
   def unsubscribed
     stop_all_streams
     logger.info "User #{current_user.id} unsubscribed from conversation channel"
+  end
+
+  # Send message via WebSocket instead of HTTP POST
+  def send_message(data)
+    return unless @conversation&.participant?(current_user)
+    
+    content = data['content']&.strip
+    return if content.blank?
+    
+    # Validate content length
+    if content.length > 2000
+      transmit({ type: 'error', message: 'Message too long (max 2000 characters)' })
+      return
+    end
+
+    # Create the message
+    message = @conversation.messages.create!(
+      sender: current_user,
+      content: content,
+      message_type: data['message_type'] || 'text'
+    )
+
+    # Send confirmation back to sender
+    transmit({
+      type: 'message_sent',
+      temp_id: data['temp_id'],
+      message: serialize_message(message)
+    })
+
+    logger.info "User #{current_user.id} sent message #{message.id} in conversation #{@conversation.id}"
+  rescue ActiveRecord::RecordInvalid => e
+    transmit({ type: 'error', message: e.message, temp_id: data['temp_id'] })
+    logger.error "Error creating message: #{e.message}"
+  rescue => e
+    transmit({ type: 'error', message: 'Failed to send message', temp_id: data['temp_id'] })
+    logger.error "Error sending message: #{e.message}"
   end
 
   def mark_as_read(data)
@@ -28,13 +64,12 @@ class ConversationChannel < ApplicationCable::Channel
   end
 
   def typing(data)
-    conversation = find_conversation(data['conversation_id'])
-    return unless conversation&.participant?(current_user)
+    return unless @conversation&.participant?(current_user)
     
     # Broadcast typing indicator to the conversation
     # This is a lightweight broadcast that doesn't hit the database
     ActionCable.server.broadcast(
-      "conversation_#{conversation.id}",
+      "conversation_#{@conversation.id}",
       {
         type: 'typing',
         user_id: current_user.id,
@@ -53,5 +88,19 @@ class ConversationChannel < ApplicationCable::Channel
     return nil unless conversation_id
     
     Conversation.find_by(id: conversation_id)
+  end
+
+  def serialize_message(message)
+    {
+      id: message.id,
+      conversation_id: message.conversation_id,
+      sender_id: message.sender_id,
+      sender_name: message.sender.name,
+      content: message.content,
+      message_type: message.message_type,
+      read_at: message.read_at,
+      created_at: message.created_at.iso8601,
+      is_read: message.read?
+    }
   end
 end

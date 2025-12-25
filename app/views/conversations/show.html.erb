@@ -190,10 +190,14 @@ function initMessageChat() {
   const sendButton = document.getElementById('send-button');
   const chatArea = document.getElementById('chat-area');
   const conversationId = chatArea?.dataset.conversationId;
+  const currentUserId = <%= current_user.id %>;
 
   // Guard against double initialization
   if (messageInput?.dataset.initialized === 'true') return;
   if (messageInput) messageInput.dataset.initialized = 'true';
+
+  // Store pending messages for optimistic UI
+  const pendingMessages = new Map();
 
   // Scroll to bottom
   function scrollToBottom() {
@@ -205,144 +209,260 @@ function initMessageChat() {
 
   // Enable/disable send button based on input
   if (messageInput && sendButton) {
-    // Direct function to update button state
     function updateButtonState() {
       sendButton.disabled = messageInput.value.trim() === '';
-      
-      // Auto-resize textarea
       messageInput.style.height = 'auto';
       messageInput.style.height = Math.min(messageInput.scrollHeight, 120) + 'px';
     }
 
-    // Add multiple event listeners for better compatibility
     messageInput.addEventListener('input', updateButtonState);
     messageInput.addEventListener('keyup', updateButtonState);
     messageInput.addEventListener('change', updateButtonState);
     messageInput.addEventListener('paste', () => setTimeout(updateButtonState, 0));
 
-    // Handle Enter key (submit) and Shift+Enter (new line)
     messageInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
         if (messageInput.value.trim() !== '') {
-          messageForm.requestSubmit();
+          sendMessage();
         }
       }
     });
 
-    // Initial check in case there's already text
     updateButtonState();
   }
 
-  // Handle form submission
-  if (messageForm) {
-    messageForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      
-      const content = messageInput.value.trim();
-      if (!content) return;
-
-      // Optimistic UI update
-      const tempId = 'temp-' + Date.now();
-      const tempMessage = document.createElement('div');
-      tempMessage.id = tempId;
-      tempMessage.className = 'flex justify-end';
-      tempMessage.innerHTML = `
-        <div class="message-bubble sent rounded-2xl px-4 py-2 text-white">
-          <p class="text-sm">${escapeHtml(content)}</p>
-          <p class="text-xs opacity-70 mt-1">Sending...</p>
-        </div>
-      `;
-      messagesContainer.insertBefore(tempMessage, document.getElementById('typing-indicator'));
-      
-      // Clear input
-      messageInput.value = '';
-      messageInput.style.height = 'auto';
-      sendButton.disabled = true;
-      scrollToBottom();
-
-      // Send to server
-      try {
-        const formData = new FormData();
-        formData.append('message[content]', content);
-        
-        const response = await fetch(messageForm.action, {
-          method: 'POST',
-          headers: {
-            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
-            'Accept': 'application/json'
-          },
-          body: formData
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          // Update temp message with real data
-          const tempEl = document.getElementById(tempId);
-          if (tempEl) {
-            tempEl.innerHTML = `
-              <div class="message-bubble sent rounded-2xl px-4 py-2 text-white">
-                <p class="text-sm">${escapeHtml(data.content)}</p>
-                <p class="text-xs opacity-70 mt-1">${formatTime(data.created_at)}</p>
-              </div>
-            `;
-          }
-        } else {
-          // Show error
-          const tempEl = document.getElementById(tempId);
-          if (tempEl) {
-            tempEl.querySelector('.message-bubble').classList.add('border', 'border-red-500');
-            tempEl.querySelector('.text-xs').textContent = 'Failed to send';
-          }
-        }
-      } catch (error) {
-        console.error('Error sending message:', error);
-      }
-    });
-  }
-
-  // Action Cable subscription
+  // WebSocket subscription
+  let subscription = null;
+  
   if (conversationId && typeof App !== 'undefined' && App.cable) {
-    App.cable.subscriptions.create(
+    subscription = App.cable.subscriptions.create(
       { channel: "ConversationChannel", conversation_id: conversationId },
       {
+        connected() {
+          console.log('Connected to conversation channel via WebSocket');
+          // Update connection status indicator if needed
+        },
+
+        disconnected() {
+          console.log('Disconnected from conversation channel');
+        },
+
         received(data) {
-          if (data.type === 'new_message') {
-            // Don't add if it's our own message (we already added it optimistically)
-            if (data.message.sender_id !== <%= current_user.id %>) {
-              addMessage(data.message);
-              scrollToBottom();
-              
-              // Mark as read
-              fetch(`/conversations/${conversationId}/messages/mark_read`, {
-                method: 'POST',
-                headers: {
-                  'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
-                  'Accept': 'application/json'
-                }
-              });
-            }
-          } else if (data.type === 'typing') {
-            if (data.user_id !== <%= current_user.id %>) {
-              const indicator = document.getElementById('typing-indicator');
-              if (data.is_typing) {
-                indicator?.classList.remove('hidden');
-              } else {
-                indicator?.classList.add('hidden');
+          console.log('Received via WebSocket:', data.type);
+          
+          switch(data.type) {
+            case 'new_message':
+              // Message from another user - add to UI
+              if (data.message.sender_id !== currentUserId) {
+                addMessage(data.message);
+                scrollToBottom();
+                // Mark as read via WebSocket
+                this.perform('mark_as_read', { conversation_id: conversationId });
               }
-            }
+              break;
+              
+            case 'message_sent':
+              // Confirmation of our sent message - update optimistic UI
+              const tempEl = document.getElementById(data.temp_id);
+              if (tempEl) {
+                tempEl.id = `message-${data.message.id}`;
+                tempEl.innerHTML = `
+                  <div class="message-bubble sent rounded-2xl px-4 py-2 text-white">
+                    <p class="text-sm">${escapeHtml(data.message.content)}</p>
+                    <p class="text-xs opacity-70 mt-1">${formatTime(data.message.created_at)}</p>
+                  </div>
+                `;
+              }
+              pendingMessages.delete(data.temp_id);
+              break;
+              
+            case 'error':
+              // Error sending message - show error state
+              if (data.temp_id) {
+                const errorEl = document.getElementById(data.temp_id);
+                if (errorEl) {
+                  const bubble = errorEl.querySelector('.message-bubble');
+                  if (bubble) {
+                    bubble.classList.add('border', 'border-red-500');
+                    const timeEl = errorEl.querySelector('.text-xs');
+                    if (timeEl) timeEl.textContent = 'Failed to send - tap to retry';
+                    errorEl.style.cursor = 'pointer';
+                    errorEl.onclick = () => retryMessage(data.temp_id);
+                  }
+                }
+              }
+              console.error('Message error:', data.message);
+              break;
+              
+            case 'typing':
+              if (data.user_id !== currentUserId) {
+                const indicator = document.getElementById('typing-indicator');
+                if (data.is_typing) {
+                  indicator?.classList.remove('hidden');
+                } else {
+                  indicator?.classList.add('hidden');
+                }
+              }
+              break;
           }
+        },
+
+        // Send message via WebSocket
+        sendMessage(content, tempId) {
+          this.perform('send_message', { 
+            content: content, 
+            temp_id: tempId,
+            message_type: 'text'
+          });
+        },
+
+        // Send typing indicator
+        sendTyping(isTyping) {
+          this.perform('typing', { is_typing: isTyping });
         }
       }
     );
   }
 
+  // Send message function
+  function sendMessage() {
+    const content = messageInput.value.trim();
+    if (!content) return;
+    if (!subscription) {
+      console.error('No WebSocket connection');
+      // Fallback to HTTP if WebSocket not available
+      sendMessageHttp(content);
+      return;
+    }
+
+    const tempId = 'temp-' + Date.now();
+    
+    // Optimistic UI update
+    const tempMessage = document.createElement('div');
+    tempMessage.id = tempId;
+    tempMessage.className = 'flex justify-end';
+    tempMessage.innerHTML = `
+      <div class="message-bubble sent rounded-2xl px-4 py-2 text-white">
+        <p class="text-sm">${escapeHtml(content)}</p>
+        <p class="text-xs opacity-70 mt-1">Sending...</p>
+      </div>
+    `;
+    messagesContainer.insertBefore(tempMessage, document.getElementById('typing-indicator'));
+    
+    // Store pending message for retry
+    pendingMessages.set(tempId, content);
+    
+    // Clear input
+    messageInput.value = '';
+    messageInput.style.height = 'auto';
+    sendButton.disabled = true;
+    scrollToBottom();
+
+    // Send via WebSocket
+    subscription.sendMessage(content, tempId);
+  }
+
+  // Retry failed message
+  function retryMessage(tempId) {
+    const content = pendingMessages.get(tempId);
+    if (!content) return;
+    
+    // Remove failed message
+    const el = document.getElementById(tempId);
+    if (el) el.remove();
+    
+    // Resend
+    messageInput.value = content;
+    sendMessage();
+  }
+
+  // HTTP fallback for sending messages
+  async function sendMessageHttp(content) {
+    const tempId = 'temp-' + Date.now();
+    
+    const tempMessage = document.createElement('div');
+    tempMessage.id = tempId;
+    tempMessage.className = 'flex justify-end';
+    tempMessage.innerHTML = `
+      <div class="message-bubble sent rounded-2xl px-4 py-2 text-white">
+        <p class="text-sm">${escapeHtml(content)}</p>
+        <p class="text-xs opacity-70 mt-1">Sending...</p>
+      </div>
+    `;
+    messagesContainer.insertBefore(tempMessage, document.getElementById('typing-indicator'));
+    
+    messageInput.value = '';
+    messageInput.style.height = 'auto';
+    sendButton.disabled = true;
+    scrollToBottom();
+
+    try {
+      const formData = new FormData();
+      formData.append('message[content]', content);
+      
+      const response = await fetch(messageForm.action, {
+        method: 'POST',
+        headers: {
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+          'Accept': 'application/json'
+        },
+        body: formData
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const tempEl = document.getElementById(tempId);
+        if (tempEl) {
+          tempEl.innerHTML = `
+            <div class="message-bubble sent rounded-2xl px-4 py-2 text-white">
+              <p class="text-sm">${escapeHtml(data.content)}</p>
+              <p class="text-xs opacity-70 mt-1">${formatTime(data.created_at)}</p>
+            </div>
+          `;
+        }
+      } else {
+        const tempEl = document.getElementById(tempId);
+        if (tempEl) {
+          tempEl.querySelector('.message-bubble').classList.add('border', 'border-red-500');
+          tempEl.querySelector('.text-xs').textContent = 'Failed to send';
+        }
+      }
+    } catch (error) {
+      console.error('Error sending message via HTTP:', error);
+    }
+  }
+
+  // Form submit handler (use WebSocket)
+  if (messageForm) {
+    messageForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      sendMessage();
+    });
+  }
+
+  // Typing indicator - debounced
+  let typingTimeout = null;
+  if (messageInput && subscription) {
+    messageInput.addEventListener('input', () => {
+      if (subscription) {
+        subscription.sendTyping(true);
+        
+        clearTimeout(typingTimeout);
+        typingTimeout = setTimeout(() => {
+          subscription.sendTyping(false);
+        }, 2000);
+      }
+    });
+  }
+
   function addMessage(message) {
-    const isOwn = message.sender_id === <%= current_user.id %>;
+    const isOwn = message.sender_id === currentUserId;
     const div = document.createElement('div');
+    div.id = `message-${message.id}`;
     div.className = isOwn ? 'flex justify-end' : 'flex justify-start';
     div.innerHTML = `
-      <div class="message-bubble ${isOwn ? 'sent' : 'received'} rounded-2xl px-4 py-2 ${isOwn ? 'text-white' : 'text-white'}">
+      <div class="message-bubble ${isOwn ? 'sent' : 'received'} rounded-2xl px-4 py-2 text-white">
         ${!isOwn ? `<p class="text-xs text-pink-400 mb-1">${escapeHtml(message.sender_name)}</p>` : ''}
         <p class="text-sm">${escapeHtml(message.content)}</p>
         <p class="text-xs opacity-70 mt-1">${formatTime(message.created_at)}</p>
@@ -368,7 +488,6 @@ document.addEventListener('DOMContentLoaded', initMessageChat);
 document.addEventListener('turbo:load', initMessageChat);
 document.addEventListener('turbo:render', initMessageChat);
 
-// Also try to initialize immediately if DOM is already ready
 if (document.readyState !== 'loading') {
   initMessageChat();
 }
