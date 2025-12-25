@@ -47,9 +47,9 @@
       </div>
     </div>
 
-    <%# Reaction bar - show existing reactions %>
+    <%# Reaction bar - show existing reactions (centered below bubble) %>
     <% if reaction_counts.any? %>
-      <div class="reaction-bar flex flex-wrap gap-1 mt-1 <%= is_own ? 'justify-end' : 'justify-start' %>" data-reactions-container>
+      <div class="reaction-bar flex flex-wrap gap-1 mt-1 justify-center" data-reactions-container>
         <% reaction_counts.each do |emoji, count| %>
           <button 
             class="reaction-pill inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-xs bg-gray-700/80 hover:bg-gray-600 transition-colors <%= message.reacted_by?(current_user, emoji) ? 'ring-1 ring-pink-500 bg-pink-900/30' : '' %>"

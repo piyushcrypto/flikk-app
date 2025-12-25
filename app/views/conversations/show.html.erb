@@ -972,7 +972,7 @@ function updateReactionCounts(messageId, reactionCounts) {
   
   if (!reactionsContainer && Object.keys(reactionCounts).length > 0) {
     reactionsContainer = document.createElement('div');
-    reactionsContainer.className = 'reaction-bar flex flex-wrap gap-1 mt-1';
+    reactionsContainer.className = 'reaction-bar flex flex-wrap gap-1 mt-1 justify-center';
     reactionsContainer.dataset.reactionsContainer = '';
     wrapper.appendChild(reactionsContainer);
   }
@@ -998,8 +998,12 @@ function updateReactionCounts(messageId, reactionCounts) {
   }
 }
 
-// Handle reaction updates from WebSocket
+// Handle reaction updates from WebSocket (from other users)
 function handleReactionUpdate(data) {
+  // Only process if it's from another user (we already updated via reaction_confirmed)
+  const currentUserId = <%= current_user.id %>;
+  if (data.user_id === currentUserId) return;
+  
   updateReactionCounts(data.message_id, data.reaction_counts);
 }
 

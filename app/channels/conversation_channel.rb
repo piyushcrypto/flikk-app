@@ -120,13 +120,29 @@ class ConversationChannel < ApplicationCable::Channel
     end
 
     if action
+      reaction_counts = message.reload.reaction_counts
+      
+      # Send confirmation back to sender
       transmit({
         type: 'reaction_confirmed',
         message_id: message_id,
         emoji: emoji,
         action: action,
-        reaction_counts: message.reaction_counts
+        reaction_counts: reaction_counts
       })
+
+      # Broadcast to all participants so other user sees the reaction
+      ActionCable.server.broadcast(
+        "conversation_#{@conversation.id}",
+        {
+          type: 'reaction_update',
+          message_id: message_id,
+          emoji: emoji,
+          action: action,
+          user_id: current_user.id,
+          reaction_counts: reaction_counts
+        }
+      )
     end
 
     logger.info "User #{current_user.id} #{action} reaction #{emoji} on message #{message_id}"
