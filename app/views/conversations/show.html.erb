@@ -32,9 +32,12 @@
     background: #252525;
   }
 
-  /* Show reaction trigger on message hover */
-  .message-row:hover .reaction-trigger {
-    opacity: 1 !important;
+  /* Reaction trigger is always visible */
+  .reaction-trigger {
+    opacity: 0.7;
+  }
+  .reaction-trigger:hover {
+    opacity: 1;
   }
 
   .reaction-pill {
@@ -337,19 +340,47 @@ function initMessageChat() {
   // Create HTML for a message (used when loading earlier messages)
   function createMessageHtml(message) {
     const isOwn = message.sender_id === currentUserId;
+    
     const avatarHtml = !isOwn ? `
-      <div class="flex-shrink-0 mr-2 self-end">
+      <div class="flex-shrink-0">
         <div class="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center">
           <span class="text-white font-bold text-xs">${escapeHtml(message.sender_name.charAt(0).toUpperCase())}</span>
         </div>
       </div>
     ` : '';
     
+    const reactionBtnHtml = `
+      <button 
+        class="reaction-trigger flex-shrink-0 w-7 h-7 rounded-full bg-gray-700 hover:bg-gray-600 flex items-center justify-center transition-all hover:scale-110"
+        onclick="openReactionPicker(this, ${message.id})"
+        data-message-id="${message.id}"
+        title="React"
+      >
+        <span class="text-sm">😊</span>
+      </button>
+    `;
+    
+    const reactionPickerHtml = `
+      <div id="reaction-picker-${message.id}" class="reaction-picker-modal hidden fixed z-50" data-message-id="${message.id}">
+        <div class="bg-gray-800 rounded-2xl p-2 shadow-2xl border border-gray-700 max-w-[90vw]">
+          <div class="flex gap-1 overflow-x-auto">
+            ${allowedEmojis.map(emoji => `
+              <button 
+                class="reaction-btn flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-xl sm:text-2xl hover:scale-110 hover:bg-gray-700 rounded-full transition-all"
+                onclick="selectReaction(this, '${emoji}', ${message.id})"
+              >${emoji}</button>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    `;
+    
     return `
-      <div class="message-row flex ${isOwn ? 'justify-end' : 'justify-start'}" data-message-id="${message.id}">
+      <div class="message-row flex ${isOwn ? 'justify-end' : 'justify-start'} items-end gap-1" data-message-id="${message.id}">
+        ${isOwn ? reactionBtnHtml : ''}
         ${avatarHtml}
-        <div class="message-wrapper relative max-w-[75%] sm:max-w-[65%]">
-          <div class="message-bubble ${isOwn ? 'sent' : 'received'} rounded-2xl px-4 py-2 text-white relative">
+        <div class="message-wrapper max-w-[70%] sm:max-w-[65%]">
+          <div class="message-bubble ${isOwn ? 'sent' : 'received'} rounded-2xl px-4 py-2 text-white">
             ${!isOwn ? `<p class="text-xs text-pink-400 mb-1 font-medium">${escapeHtml(message.sender_name)}</p>` : ''}
             <p class="text-sm whitespace-pre-wrap break-words">${escapeHtml(message.content)}</p>
             <div class="flex items-center justify-end gap-1 mt-1">
@@ -358,7 +389,9 @@ function initMessageChat() {
             </div>
           </div>
         </div>
+        ${!isOwn ? reactionBtnHtml : ''}
       </div>
+      ${reactionPickerHtml}
     `;
   }
 
@@ -649,64 +682,18 @@ function initMessageChat() {
   }
 
   function addMessage(message) {
-    const isOwn = message.sender_id === currentUserId;
-    const div = document.createElement('div');
-    div.className = `message-row flex ${isOwn ? 'justify-end' : 'justify-start'}`;
-    div.dataset.messageId = message.id;
+    // Use the shared createMessageHtml function for consistency
+    const messageHtml = createMessageHtml(message);
     
-    const avatarHtml = !isOwn ? `
-      <div class="flex-shrink-0 mr-2 self-end">
-        <div class="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center">
-          <span class="text-white font-bold text-xs">${escapeHtml(message.sender_name.charAt(0).toUpperCase())}</span>
-        </div>
-      </div>
-    ` : '';
+    // Create a temporary container to parse the HTML
+    const temp = document.createElement('div');
+    temp.innerHTML = messageHtml;
     
-    div.innerHTML = `
-      ${avatarHtml}
-      <div class="message-wrapper relative max-w-[75%] sm:max-w-[65%]">
-        <div class="message-bubble ${isOwn ? 'sent' : 'received'} rounded-2xl px-4 py-2 text-white relative">
-          ${!isOwn ? `<p class="text-xs text-pink-400 mb-1 font-medium">${escapeHtml(message.sender_name)}</p>` : ''}
-          <p class="text-sm whitespace-pre-wrap break-words">${escapeHtml(message.content)}</p>
-          <div class="flex items-center justify-end gap-1 mt-1">
-            <span class="text-xs opacity-60">${formatTime(message.created_at)}</span>
-            ${isOwn ? '<span class="text-xs opacity-50">✓</span>' : ''}
-          </div>
-          <button 
-            class="reaction-trigger absolute ${isOwn ? '-left-8' : '-right-8'} top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-gray-700/90 hover:bg-gray-600 flex items-center justify-center opacity-0 hover:opacity-100 transition-all shadow-lg"
-            onclick="openReactionPicker(this, ${message.id})"
-            data-message-id="${message.id}"
-          >
-            <svg class="w-4 h-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </button>
-        </div>
-      </div>
-    `;
-    
-    // Also add the reaction picker modal for this message
-    const pickerDiv = document.createElement('div');
-    pickerDiv.id = `reaction-picker-${message.id}`;
-    pickerDiv.className = 'reaction-picker-modal hidden fixed z-50';
-    pickerDiv.dataset.messageId = message.id;
-    pickerDiv.innerHTML = `
-      <div class="bg-gray-800/95 backdrop-blur-md rounded-2xl p-2 shadow-2xl border border-gray-700">
-        <div class="flex gap-1">
-          ${allowedEmojis.map(emoji => `
-            <button 
-              class="reaction-btn w-10 h-10 flex items-center justify-center text-2xl hover:scale-125 hover:bg-gray-700 rounded-full transition-all"
-              data-emoji="${emoji}"
-              data-message-id="${message.id}"
-              onclick="selectReaction(this, '${emoji}', ${message.id})"
-            >${emoji}</button>
-          `).join('')}
-        </div>
-      </div>
-    `;
-    
-    messagesContainer.insertBefore(div, document.getElementById('typing-indicator'));
-    messagesContainer.insertBefore(pickerDiv, document.getElementById('typing-indicator'));
+    // Insert before typing indicator
+    const typingIndicator = document.getElementById('typing-indicator');
+    while (temp.firstChild) {
+      messagesContainer.insertBefore(temp.firstChild, typingIndicator);
+    }
   }
 
   function escapeHtml(text) {
@@ -768,37 +755,56 @@ let activeReactionPicker = null;
 
 // Open the reaction picker modal
 function openReactionPicker(triggerBtn, messageId) {
-  // Close any existing picker
+  // Close any existing picker first
   closeAllReactionPickers();
   
   const picker = document.getElementById(`reaction-picker-${messageId}`);
   if (!picker) return;
   
-  // Position the picker near the trigger button
-  const rect = triggerBtn.getBoundingClientRect();
-  const isOwnMessage = triggerBtn.closest('.message-row')?.querySelector('.message-bubble.sent');
-  
-  picker.style.top = `${rect.top - 60}px`;
-  
-  if (isOwnMessage) {
-    picker.style.left = `${rect.left - 280}px`;
-  } else {
-    picker.style.left = `${rect.right + 10}px`;
-  }
-  
-  // Make sure picker stays in viewport
-  const pickerRect = picker.getBoundingClientRect();
-  if (pickerRect.right > window.innerWidth) {
-    picker.style.left = `${window.innerWidth - 360}px`;
-  }
-  if (pickerRect.left < 10) {
-    picker.style.left = '10px';
-  }
-  
+  // Show the picker first to get its dimensions
   picker.classList.remove('hidden');
+  
+  // Position the picker near the trigger button
+  const triggerRect = triggerBtn.getBoundingClientRect();
+  const pickerEl = picker.querySelector('div'); // Inner container
+  const pickerWidth = pickerEl?.offsetWidth || 300;
+  const pickerHeight = pickerEl?.offsetHeight || 50;
+  
+  const isMobile = window.innerWidth < 640;
+  
+  if (isMobile) {
+    // On mobile, center the picker horizontally and position above the button
+    const leftPos = Math.max(10, (window.innerWidth - pickerWidth) / 2);
+    picker.style.left = `${leftPos}px`;
+    picker.style.top = `${Math.max(10, triggerRect.top - pickerHeight - 10)}px`;
+  } else {
+    // On desktop, position near the button
+    const isOwnMessage = triggerBtn.closest('.message-row')?.classList.contains('justify-end');
+    
+    // Position above the button
+    let topPos = triggerRect.top - pickerHeight - 10;
+    if (topPos < 10) topPos = triggerRect.bottom + 10; // Below if no room above
+    picker.style.top = `${topPos}px`;
+    
+    // Position horizontally
+    if (isOwnMessage) {
+      // Own message - align picker to the right
+      let leftPos = triggerRect.right - pickerWidth;
+      if (leftPos < 10) leftPos = 10;
+      picker.style.left = `${leftPos}px`;
+    } else {
+      // Received message - align picker to the left
+      let leftPos = triggerRect.left;
+      if (leftPos + pickerWidth > window.innerWidth - 10) {
+        leftPos = window.innerWidth - pickerWidth - 10;
+      }
+      picker.style.left = `${leftPos}px`;
+    }
+  }
+  
   activeReactionPicker = picker;
   
-  // Close on click outside
+  // Close on click outside (with slight delay to prevent immediate close)
   setTimeout(() => {
     document.addEventListener('click', closePickerOnOutsideClick);
   }, 10);
