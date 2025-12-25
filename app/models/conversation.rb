@@ -53,8 +53,23 @@ class Conversation < ApplicationRecord
       end
     end
 
-    # Broadcast read status to the other participant
+    # Broadcast read status to BOTH channels:
+    # 1. The conversation channel (so sender sees their messages marked as read)
+    # 2. The other participant's notification channel
     other = other_participant(user)
+    
+    # Broadcast to conversation channel for real-time read receipt updates
+    ActionCable.server.broadcast(
+      "conversation_#{id}",
+      {
+        type: 'messages_read',
+        conversation_id: id,
+        reader_id: user.id,
+        read_at: Time.current.iso8601
+      }
+    )
+    
+    # Also broadcast to other user's notifications channel (for inbox updates)
     ActionCable.server.broadcast(
       "notifications_#{other.id}",
       {

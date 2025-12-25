@@ -257,9 +257,10 @@ function initMessageChat() {
   const conversationId = chatArea?.dataset.conversationId;
   const currentUserId = <%= current_user.id %>;
 
-  // Guard against double initialization
-  if (messageInput?.dataset.initialized === 'true') return;
-  if (messageInput) messageInput.dataset.initialized = 'true';
+  // Guard against double initialization using a page-specific key
+  const initKey = `chat-${conversationId}`;
+  if (window._chatInitialized === initKey) return;
+  window._chatInitialized = initKey;
 
   // Store pending messages for optimistic UI
   const pendingMessages = new Map();
@@ -337,7 +338,7 @@ function initMessageChat() {
     }
   }
 
-  // Create HTML for a message (used when loading earlier messages)
+  // Create HTML for a message (used when loading earlier messages and receiving new messages)
   function createMessageHtml(message) {
     const isOwn = message.sender_id === currentUserId;
     
@@ -360,20 +361,8 @@ function initMessageChat() {
       </button>
     `;
     
-    const reactionPickerHtml = `
-      <div id="reaction-picker-${message.id}" class="reaction-picker-modal hidden fixed z-50" data-message-id="${message.id}">
-        <div class="bg-gray-800 rounded-2xl p-2 shadow-2xl border border-gray-700 max-w-[90vw]">
-          <div class="flex gap-1 overflow-x-auto">
-            ${allowedEmojis.map(emoji => `
-              <button 
-                class="reaction-btn flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-xl sm:text-2xl hover:scale-110 hover:bg-gray-700 rounded-full transition-all"
-                onclick="selectReaction(this, '${emoji}', ${message.id})"
-              >${emoji}</button>
-            `).join('')}
-          </div>
-        </div>
-      </div>
-    `;
+    // Use the global helper for reaction picker
+    const reactionPickerHtml = createReactionPickerHtml(message.id);
     
     return `
       <div class="message-row flex ${isOwn ? 'justify-end' : 'justify-start'} items-end gap-1" data-message-id="${message.id}">
@@ -435,7 +424,15 @@ function initMessageChat() {
   }
 
   // WebSocket subscription - store globally for reaction handlers
-  window.conversationSubscription = null;
+  // Clean up any existing subscription first
+  if (window.conversationSubscription) {
+    try {
+      window.conversationSubscription.unsubscribe();
+    } catch (e) {
+      console.log('Error unsubscribing:', e);
+    }
+    window.conversationSubscription = null;
+  }
   
   if (conversationId && typeof App !== 'undefined' && App.cable) {
     window.conversationSubscription = App.cable.subscriptions.create(
@@ -478,12 +475,31 @@ function initMessageChat() {
               const tempEl = document.getElementById(data.temp_id);
               if (tempEl) {
                 tempEl.id = `message-${data.message.id}`;
+                tempEl.dataset.messageId = data.message.id;
+                tempEl.className = 'message-row flex justify-end items-end gap-1';
+                const isRead = data.message.is_read;
                 tempEl.innerHTML = `
-                  <div class="message-bubble sent rounded-2xl px-4 py-2 text-white">
-                    <p class="text-sm">${escapeHtml(data.message.content)}</p>
-                    <p class="text-xs opacity-70 mt-1">${formatTime(data.message.created_at)}</p>
+                  <button 
+                    class="reaction-trigger flex-shrink-0 w-7 h-7 rounded-full bg-gray-700 hover:bg-gray-600 flex items-center justify-center transition-all hover:scale-110"
+                    onclick="openReactionPicker(this, ${data.message.id})"
+                    data-message-id="${data.message.id}"
+                    title="React"
+                  >
+                    <span class="text-sm">😊</span>
+                  </button>
+                  <div class="message-wrapper max-w-[70%] sm:max-w-[65%]">
+                    <div class="message-bubble sent rounded-2xl px-4 py-2 text-white">
+                      <p class="text-sm whitespace-pre-wrap break-words">${escapeHtml(data.message.content)}</p>
+                      <div class="flex items-center justify-end gap-1 mt-1">
+                        <span class="text-xs opacity-60">${formatTime(data.message.created_at)}</span>
+                        ${isRead ? '<span class="text-xs text-blue-400">✓✓</span>' : '<span class="text-xs opacity-50">✓</span>'}
+                      </div>
+                    </div>
                   </div>
                 `;
+                // Add reaction picker after the message row
+                const pickerHtml = createReactionPickerHtml(data.message.id);
+                tempEl.insertAdjacentHTML('afterend', pickerHtml);
               }
               pendingMessages.delete(data.temp_id);
               break;
@@ -528,6 +544,13 @@ function initMessageChat() {
               // Our reaction was confirmed - update counts from server
               if (typeof updateReactionCounts === 'function') {
                 updateReactionCounts(data.message_id, data.reaction_counts);
+              }
+              break;
+              
+            case 'messages_read':
+              // Other user read our messages - update read receipts
+              if (data.reader_id !== currentUserId) {
+                updateReadReceipts(data.read_at);
               }
               break;
           }
@@ -668,14 +691,16 @@ function initMessageChat() {
 
   // Typing indicator - debounced
   let typingTimeout = null;
-  if (messageInput && subscription) {
+  if (messageInput && window.conversationSubscription) {
     messageInput.addEventListener('input', () => {
       if (window.conversationSubscription) {
         window.conversationSubscription.sendTyping(true);
         
         clearTimeout(typingTimeout);
         typingTimeout = setTimeout(() => {
-          window.conversationSubscription.sendTyping(false);
+          if (window.conversationSubscription) {
+            window.conversationSubscription.sendTyping(false);
+          }
         }, 2000);
       }
     });
@@ -706,13 +731,51 @@ function initMessageChat() {
     const date = new Date(isoString);
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   }
+
+  // Update read receipts for sent messages (change single tick to double tick)
+  function updateReadReceipts(readAt) {
+    // Find all sent message rows (own messages) and update single ticks to double ticks
+    const sentMessages = document.querySelectorAll('.message-row.flex.justify-end');
+    sentMessages.forEach(row => {
+      const tickEl = row.querySelector('.opacity-50');
+      if (tickEl && tickEl.textContent.trim() === '✓') {
+        // Change from single tick to double blue tick
+        tickEl.className = 'text-xs text-blue-400';
+        tickEl.textContent = '✓✓';
+      }
+    });
+  }
 }
 
-// Initialize on multiple events for maximum compatibility
-document.addEventListener('DOMContentLoaded', initMessageChat);
-document.addEventListener('turbo:load', initMessageChat);
-document.addEventListener('turbo:render', initMessageChat);
+// Cleanup function for when navigating away
+function cleanupMessageChat() {
+  // Unsubscribe from WebSocket
+  if (window.conversationSubscription) {
+    try {
+      window.conversationSubscription.unsubscribe();
+    } catch (e) {
+      console.log('Error unsubscribing:', e);
+    }
+    window.conversationSubscription = null;
+  }
+  
+  // Reset initialization flag
+  window._chatInitialized = null;
+}
 
+// Use a one-time registration pattern to prevent duplicate listeners
+if (!window._chatListenersRegistered) {
+  window._chatListenersRegistered = true;
+  
+  // Register cleanup with Turbo
+  document.addEventListener('turbo:before-cache', cleanupMessageChat);
+  document.addEventListener('turbo:before-render', cleanupMessageChat);
+  
+  // Initialize on page load
+  document.addEventListener('turbo:load', initMessageChat);
+}
+
+// Also initialize immediately if this is the current page
 if (document.readyState !== 'loading') {
   initMessageChat();
 }
@@ -746,12 +809,36 @@ function initSoundToggle() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', initSoundToggle);
-document.addEventListener('turbo:load', initSoundToggle);
+// Initialize sound toggle on page load (using one-time pattern)
+if (!window._soundToggleListenersRegistered) {
+  window._soundToggleListenersRegistered = true;
+  document.addEventListener('turbo:load', initSoundToggle);
+}
+
+// Initialize immediately for current page
+initSoundToggle();
 
 // Global reaction functions (available to all messages)
 const allowedEmojis = ['❤️', '😂', '😮', '😢', '😡', '👍', '👎', '🔥', '💯', '🙏'];
 let activeReactionPicker = null;
+
+// Helper to create reaction picker HTML for dynamically added messages
+function createReactionPickerHtml(messageId) {
+  const emojiButtons = allowedEmojis.map(emoji => `
+    <button 
+      class="reaction-btn flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-xl sm:text-2xl hover:scale-110 hover:bg-gray-700 rounded-full transition-all"
+      onclick="selectReaction(this, '${emoji}', ${messageId})"
+    >${emoji}</button>
+  `).join('');
+  
+  return `
+    <div id="reaction-picker-${messageId}" class="reaction-picker-modal hidden fixed z-50" data-message-id="${messageId}">
+      <div class="bg-gray-800 rounded-2xl p-2 shadow-2xl border border-gray-700 max-w-[90vw]">
+        <div class="flex gap-1 overflow-x-auto">${emojiButtons}</div>
+      </div>
+    </div>
+  `;
+}
 
 // Open the reaction picker modal
 function openReactionPicker(triggerBtn, messageId) {
@@ -992,7 +1079,20 @@ function handleReactionUpdate(data) {
   updateReactionCounts(data.message_id, data.reaction_counts);
 }
 
-// Close pickers on scroll
-document.getElementById('messages-container')?.addEventListener('scroll', closeAllReactionPickers);
+// Close pickers on scroll - use one-time registration
+if (!window._reactionScrollListenerRegistered) {
+  window._reactionScrollListenerRegistered = true;
+  
+  function setupScrollListener() {
+    const container = document.getElementById('messages-container');
+    if (container) {
+      container.addEventListener('scroll', closeAllReactionPickers);
+    }
+  }
+  
+  // Setup on initial load and turbo navigation
+  document.addEventListener('turbo:load', setupScrollListener);
+  setupScrollListener(); // Also run immediately
+}
 </script>
 

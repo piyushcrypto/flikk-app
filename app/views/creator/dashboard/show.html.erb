@@ -212,23 +212,5 @@
   </div>
 </div>
 
-<script>
-document.addEventListener('turbo:load', () => {
-  const userMenuBtn = document.getElementById('user-menu-btn');
-  const userMenuDropdown = document.getElementById('user-menu-dropdown');
-  
-  if (userMenuBtn && userMenuDropdown) {
-    userMenuBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      userMenuDropdown.classList.toggle('hidden');
-    });
-    
-    document.addEventListener('click', (e) => {
-      if (!userMenuDropdown.contains(e.target) && !userMenuBtn.contains(e.target)) {
-        userMenuDropdown.classList.add('hidden');
-      }
-    });
-  }
-});
-</script>
+<!-- User menu is handled globally by turbo_cleanup.js -->
 

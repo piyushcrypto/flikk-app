@@ -13,3 +13,6 @@ pin "channels/consumer", to: "channels/consumer.js"
 
 # Notifications
 pin "notifications", to: "notifications.js"
+
+# Turbo cleanup manager
+pin "turbo_cleanup", to: "turbo_cleanup.js"
