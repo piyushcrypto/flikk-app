@@ -434,11 +434,11 @@ function initMessageChat() {
     updateButtonState();
   }
 
-  // WebSocket subscription
-  let subscription = null;
+  // WebSocket subscription - store globally for reaction handlers
+  window.conversationSubscription = null;
   
   if (conversationId && typeof App !== 'undefined' && App.cable) {
-    subscription = App.cable.subscriptions.create(
+    window.conversationSubscription = App.cable.subscriptions.create(
       { channel: "ConversationChannel", conversation_id: conversationId },
       {
         connected() {
@@ -554,7 +554,7 @@ function initMessageChat() {
   function sendMessage() {
     const content = messageInput.value.trim();
     if (!content) return;
-    if (!subscription) {
+    if (!window.conversationSubscription) {
       console.error('No WebSocket connection');
       // Fallback to HTTP if WebSocket not available
       sendMessageHttp(content);
@@ -585,7 +585,7 @@ function initMessageChat() {
     scrollToBottom();
 
     // Send via WebSocket
-    subscription.sendMessage(content, tempId);
+    window.conversationSubscription.sendMessage(content, tempId);
   }
 
   // Retry failed message
@@ -670,12 +670,12 @@ function initMessageChat() {
   let typingTimeout = null;
   if (messageInput && subscription) {
     messageInput.addEventListener('input', () => {
-      if (subscription) {
-        subscription.sendTyping(true);
+      if (window.conversationSubscription) {
+        window.conversationSubscription.sendTyping(true);
         
         clearTimeout(typingTimeout);
         typingTimeout = setTimeout(() => {
-          subscription.sendTyping(false);
+          window.conversationSubscription.sendTyping(false);
         }, 2000);
       }
     });
@@ -828,17 +828,9 @@ function closePickerOnOutsideClick(e) {
 function selectReaction(btn, emoji, messageId) {
   closeAllReactionPickers();
   
-  // Send reaction
-  const chatArea = document.getElementById('chat-area');
-  const conversationId = chatArea?.dataset.conversationId;
-  
-  const subscriptions = App.cable?.subscriptions?.subscriptions || [];
-  const subscription = subscriptions.find(s => 
-    s.identifier && s.identifier.includes(`"conversation_id":${conversationId}`)
-  );
-  
-  if (subscription) {
-    subscription.perform('react', { message_id: messageId, emoji: emoji });
+  // Use global subscription for WebSocket
+  if (window.conversationSubscription) {
+    window.conversationSubscription.perform('react', { message_id: messageId, emoji: emoji });
     updateReactionUIOptimistic(messageId, emoji);
   } else {
     toggleReactionHttp(messageId, emoji);
@@ -853,16 +845,9 @@ function toggleReaction(element) {
   if (!emoji || !messageId) return;
   if (!allowedEmojis.includes(emoji)) return;
   
-  const chatArea = document.getElementById('chat-area');
-  const conversationId = chatArea?.dataset.conversationId;
-  
-  const subscriptions = App.cable?.subscriptions?.subscriptions || [];
-  const subscription = subscriptions.find(s => 
-    s.identifier && s.identifier.includes(`"conversation_id":${conversationId}`)
-  );
-  
-  if (subscription) {
-    subscription.perform('react', { message_id: parseInt(messageId), emoji: emoji });
+  // Use global subscription for WebSocket
+  if (window.conversationSubscription) {
+    window.conversationSubscription.perform('react', { message_id: parseInt(messageId), emoji: emoji });
     
     // Optimistic toggle on pill
     if (element.classList.contains('ring-1')) {
