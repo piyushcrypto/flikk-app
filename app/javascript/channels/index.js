@@ -1,5 +1,4 @@
 import consumer from "./consumer"
 
-// Import all channels
+export default consumer
 export { consumer }
-
